@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <launch>
-  <arg name="world"  default="stocking_challenge_test"/>  <!-- empty, ... (see ../worlds) -->
+  <arg name="world"  default="stocking_challenge"/>  <!-- empty, ... (see ../worlds) -->
   <arg name="arm_left"  default="True"/>
   <arg name="arm_right"  default="True"/>
   <arg name="end_effector_left"  default="pal-gripper"/>
@@ -11,7 +11,7 @@
   <arg name="camera_model"  default="orbbec-astra"/>
   <arg name="has_screen"  default="False"/>
   <arg name="multi" default=""/>
-  <arg name="gzpose" default="-x 0.0 -y 0.0 -z 0.0 -R 0.0 -P 0.0 -Y 0.0"/>
+  <arg name="gzpose" default="-x -2.0 -y 0.0 -z 0.0 -R 0.0 -P 0.0 -Y 0.0"/>
   <arg name="gui" default="true"/>
   <arg name="debug" default="false"/>
   <arg name="public_sim" default="true"/>
