@@ -73,14 +73,20 @@ For your convenience, we have published some scripts that simplify the launch of
 
 Once logged and after configuring pal_docker_utils, you will need to execute the pal_docker.sh script with the name of the image and the application you want to start.
 
-`$ ~/pal_docker.sh -it -v /dev/snd:/dev/snd -v PATH_TO_YOUR_SHARED_WS PATH_TO_YOUR_DOCKER_IMAGE`
+`$ ~/pal_docker.sh -it -v PATH_TO_YOUR_SHARED_WS PATH_TO_YOUR_DOCKER_IMAGE`
 
 The previous command starts a bash terminal inside a container of the specified image with a shared ws.
 
 Example for this repo (using /$HOME/your_repo_dir/ws/src as shared workspace):
 
-`~/pal_docker.sh -it -v /dev/snd:/dev/snd -v /$HOME/your_repo_dir/ws/src:/home/user/ws registry.gitlab.com/competitions4/airlab/stocking-challenge`
+`$ ~/pal_docker.sh -it -v /$HOME/your_repo_dir/ws/src:/home/user/ws registry.gitlab.com/competitions4/airlab/stocking-challenge`
 
 Now, any changes in ws/src will be still be present after you exit the docker image. Note that you still have to commit and push these changes to your repository yourself!
 
+## Launching the simulation
+Once you are in the docker image, you can run the simulation using
+`$ roslaunch retail_store_simulation tiago_simulation`
 
+You will then see TIAGo spawn in a small gazebo world as described in the challenge document. You can move TIAGo to the table and cabinet using the go_to_poi service, or using the [robot_steering](http://wiki.ros.org/rqt_robot_steering) plugin in rqt.
+
+Launching the simulation will start all necessary topics, services and actions for you to build your solution on top off.
