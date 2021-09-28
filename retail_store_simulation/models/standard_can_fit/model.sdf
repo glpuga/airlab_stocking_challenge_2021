@@ -67,7 +67,7 @@
               <soft_erp>0.2</soft_erp>
               <kp>1e+13</kp>
               <kd>1</kd>
-              <max_vel>0.01</max_vel>
+              <max_vel>0.0</max_vel>
               <min_depth>0.01</min_depth> <!-- Value needs to be 0.01 to allow stacking of object without jitter-->
             </ode>
             <bullet>

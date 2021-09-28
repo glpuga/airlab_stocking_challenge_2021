@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <sdf version='1.6'>
-  <model name='empty_cabinet_2'>
+  <model name='full_cabinet'>
     <link name='link_0'>
       <inertial>
         <mass>1</mass>
@@ -18,7 +18,7 @@
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
-            <uri>model://empty_cabinet_2/empty_cabinet_2.dae</uri>
+            <uri>model://full_cabinet/full_cabinet.dae</uri>
             <scale>1 1 1</scale>
           </mesh>
         </geometry>
@@ -31,7 +31,7 @@
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
-            <uri>model://empty_cabinet_2/empty_cabinet_2.dae</uri>
+            <uri>model://full_cabinet/full_cabinet.dae</uri>
             <scale>1 1 1</scale>
           </mesh>
         </geometry>
