@@ -1,4 +1,4 @@
-FROM registry.gitlab.com/competitions4/airlab/stocking-challenge:1.1
+FROM registry.gitlab.com/competitions4/airlab/stocking-challenge:1.2
 
 LABEL maintainer="Daniel López Puig <daniel.lopez@pal-robotics.com>"
 
