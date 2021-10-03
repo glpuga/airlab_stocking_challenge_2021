@@ -1,6 +1,6 @@
 # AIRLab Delft Stocking Challenge - Technical Environment
 
-Welcome to the AIRLab Delft stocking challenge! In this repository you should find all technical details and resources to develop and submit your solution for the competition. It is important that you read this README thoroughly, it will help you getting started as quickly as possible.
+Welcome to the AIRLab Delft stocking challenge! In this repository you should find all technical details and resources to develop and submit your solution for the competition. It is important that you read this README thoroughly, it will help you getting started as quickly as possible. For more information about rules and regulations of the challenge take a look at the `AIRLab_Delft_Stocking_Challenge_Rules_And_Regulations.pdf`.
 
 ## Deliverable guidelines
 
