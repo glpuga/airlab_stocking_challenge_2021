@@ -1,0 +1,7 @@
+<launch>
+
+  <include file="$(find ek_utils)/launch/rviz.launch">
+    <arg name="rviz_config" value="$(find ek_utils)/config/tiago_nav2d.rviz" />
+  </include>
+
+</launch>
