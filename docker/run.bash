@@ -35,7 +35,7 @@ then
 fi
 LOCAL_REPO_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )/../" >/dev/null 2>&1 && pwd )"
 
-DOCKER_OPTIONS="--mount type=bind,source=${LOCAL_REPO_PATH},target=/home/user/ws/src/challenge"
+DOCKER_OPTIONS="--mount type=bind,source=${LOCAL_REPO_PATH}/workspace,target=/home/user/ws/src/workspace"
 
 USERID=$(id -u)
 GROUPID=$(id -g)
