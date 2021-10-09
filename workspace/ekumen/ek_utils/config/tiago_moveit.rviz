@@ -10,6 +10,7 @@ Panels:
         - /Planning1/Base1/Global1
         - /Planning1/Base1/Local1/motion vector1
         - /Planning1/Base1/Goal1
+        - /MarkerArray1
       Splitter Ratio: 0.61771559715271
     Tree Height: 209
   - Class: rviz/Selection
@@ -338,7 +339,9 @@ Visualization Manager:
                       Marker Topic: /move_base/local_planner/vfh_angle_candidates
                       Name: CandidatesMB
                       Namespaces:
-                        {}
+                        candidates: true
+                        histogram: true
+                        obstacles: true
                       Queue Size: 100
                       Value: true
                     - Class: rviz/MarkerArray
@@ -1317,6 +1320,24 @@ Visualization Manager:
         Show Robot Visual: true
       Value: true
       Velocity_Scaling_Factor: 1
+    - Alpha: 0.699999988079071
+      Class: rviz/Map
+      Color Scheme: map
+      Draw Behind: false
+      Enabled: true
+      Name: Map
+      Topic: /octomap/projected_map
+      Unreliable: false
+      Use Timestamp: false
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /octomap/occupied_cells_vis_array
+      Name: MarkerArray
+      Namespaces:
+        map: true
+      Queue Size: 100
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -1345,7 +1366,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/ThirdPersonFollower
-      Distance: 6.454227924346924
+      Distance: 6.4193549156188965
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -1360,10 +1381,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.3953980505466461
+      Pitch: 0.49539804458618164
       Target Frame: base_link
       Value: ThirdPersonFollower (rviz)
-      Yaw: 3.6085727214813232
+      Yaw: 3.8735804557800293
     Saved: ~
 Window Geometry:
   Displays:
