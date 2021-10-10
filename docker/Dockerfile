@@ -85,8 +85,8 @@ RUN mkdir -p /home/$USER/ws/src \
 # Add extra ROS packages here
 RUN apt update \
  && apt install -y \
-    # ros-${DIST}-image-proc \
-    # ros-${DIST}-vision-opencv \
+    ros-${DIST}-moveit-resources-panda-moveit-config \
+    ros-${DIST}-rosparam-shortcuts \
  && apt clean
 
 # Install extra tools tools
