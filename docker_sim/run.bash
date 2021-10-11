@@ -35,8 +35,6 @@ then
 fi
 LOCAL_REPO_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )/../" >/dev/null 2>&1 && pwd )"
 
-DOCKER_OPTIONS="--mount type=bind,source=${LOCAL_REPO_PATH}/workspace,target=/home/user/ws/src/workspace"
-
 USERID=$(id -u)
 GROUPID=$(id -g)
 
@@ -54,5 +52,6 @@ nvidia-docker run -it \
   --rm \
   --security-opt seccomp=unconfined \
   -u $USERID:$GROUPID \
-  $DOCKER_OPTIONS \
+  --mount type=bind,source=${LOCAL_REPO_PATH}/workspace,target=/home/user/ws/src/workspace \
+  --mount type=bind,source=${LOCAL_REPO_PATH}/darknet,target=/home/user/darknet \
   $IMAGE_NAME

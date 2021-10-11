@@ -1,6 +1,6 @@
-FROM registry.gitlab.com/competitions4/airlab/stocking-challenge:1.3
+FROM registry.gitlab.com/competitions4/airlab/stocking-challenge:1.4
 
-LABEL maintainer="Daniel López Puig <daniel.lopez@pal-robotics.com>"
+LABEL maintainer="Gerardo Puga <glpuga@gmail.com>"
 
 ARG REPO_WS=/ws
 RUN mkdir -p ws/src
@@ -51,6 +51,36 @@ RUN /bin/sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) 
 
 # [[[ Team dependencies end here (move quick additions above before submission) ]]]
 
+# Install a recent version of cmake, required to be able to build the latest version of Darknet.
+# The one already present in the ubuntu repositories is not recent enough.
+RUN sudo apt update \
+ && sudo apt install -y gpg wget \
+ && wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | sudo tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null \
+ && echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ bionic main' | sudo tee /etc/apt/sources.list.d/kitware.list >/dev/null \
+ && sudo apt-get update \
+ && sudo rm /usr/share/keyrings/kitware-archive-keyring.gpg \
+ && sudo apt-get install -y kitware-archive-keyring \
+ && sudo apt-get install -y cmake \
+ && apt clean
+
+
+# Install nvidia CUDA
+RUN apt update \
+ && apt install -y \
+    software-properties-common \
+ && apt clean
+
+# Build Darknet from source and install within /opt
+WORKDIR /root/build
+RUN git clone https://github.com/AlexeyAB/darknet.git \
+ && cd darknet \
+ && git checkout 9ff8653d999c8a22bc8f1ff4f4a8a3cc5b63d255 \
+ && mkdir -p build_release && cd build_release \
+# && cmake .. \
+# && cmake --build . --target install -- -j$(expr `nproc` - 4) \
+ && echo end
+RUN mv /root/build/darknet /opt/darknet
+
 # #####
 #
 # Fixuid configuration
@@ -75,6 +105,7 @@ RUN adduser $USER sudo \
  && echo "$USER ALL=NOPASSWD: ALL" >> /etc/sudoers.d/$USER
 
 RUN mkdir -p /home/$USER/ws/src \
+ && mkdir -p /home/$USER/darknet \
  && chown -R $USER: /home/$USER/ws
 
 # #####
@@ -101,7 +132,13 @@ RUN apt update \
 #
 
 USER $USER:$GROUP
+
 RUN rosdep update
+
+# Download the Yolov4 pretrained network. Needed when training from scratch.
+RUN /bin/sh -c 'mkdir -p ~/data/yolo' \
+ && cd ~/data/yolo \
+ && curl -sL "https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v3_optimal/yolov4.conv.137" -o yolov4.conv.137
 
 # Build and source your ros packages 
 WORKDIR /home/user/sim_ws
@@ -117,6 +154,9 @@ RUN /bin/sh -c 'echo "set-option -g default-shell /bin/bash" >> ~/.tmux.conf'
 # We can't use WORKDIR for this final adjustment because the directory
 # is set in .bashrc in the base image
 RUN echo 'cd /home/user/ws' >> ~/.bashrc 
+
+# Add darknet to the path
+RUN /bin/sh -c 'echo "export PATH=\"\$PATH\":/opt/darknet/build_release" >> ~/.bashrc'
 
 ENTRYPOINT ["fixuid"]
 
