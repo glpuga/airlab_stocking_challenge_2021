@@ -98,11 +98,12 @@ RUN mkdir -p /home/$USER/ws/src \
 #     # extra pkgs \
 #  && apt clean
 
-# # Install extra tools tools
-# RUN apt update \
-#  && apt install -y \
-#     # extra apps \
-#  && apt clean 
+# Install extra tools tools
+RUN apt update \
+ && apt install -y \
+    gcc-6 \
+    g++-6 \
+ && apt clean 
 
 # #####
 #
