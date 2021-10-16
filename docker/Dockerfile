@@ -44,7 +44,7 @@ RUN apt update \
  && apt install -y \
     gcc-5 \
     g++-5 \
-    nvidia-cuda-toolkig \
+    nvidia-cuda-toolkit \
  && apt clean
 
 # Base ROS melodic system
