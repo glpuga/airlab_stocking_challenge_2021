@@ -113,10 +113,11 @@ USER $USER:$GROUP
 
 RUN rosdep update
 
-# Download the Yolov4 pretrained network. Needed when training from scratch.
-RUN /bin/sh -c 'mkdir -p ~/data/yolo' \
- && cd ~/data/yolo \
- && curl -sL "https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v3_optimal/yolov4.conv.137" -o yolov4.conv.137
+# Download the trained darknet_ros networks and configuration
+RUN /bin/sh -c 'mkdir -p ~/darknet/' \
+ && cd ~/darknet \
+ && curl -sL "https://www.dropbox.com/s/q120jcxr1e5k17a/trained_network.tgz?dl=0" -o network.tgz \
+ && tar xvfz network.tgz
 
 # Build and source your ros packages 
 WORKDIR /home/user/sim_ws
