@@ -6,7 +6,8 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_C_FLAGS "-Wall -Wno-unused-result -Wno-unknown-pragmas -Wno-unused-variable -Wfatal-errors -fPIC ${CMAKE_C_FLAGS}")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-add_compile_options(-Wno-error=shadow -Wno-error=pointer-arith -Wno-error=type-limits)
+# Prevent build from failing for these reasons
+add_compile_options(-Wno-error=shadow -Wno-error=pointer-arith -Wno-error=type-limits -Wno-error=null-dereference)
 
 # Define path of darknet folder here.
 find_path(DARKNET_PATH
@@ -14,6 +15,7 @@ find_path(DARKNET_PATH
   HINTS "${CMAKE_CURRENT_SOURCE_DIR}/../darknet/")
 message(STATUS "Darknet path dir = ${DARKNET_PATH}")
 add_definitions(-DDARKNET_FILE_PATH="${DARKNET_PATH}")
+
 
 # Find CUDA
 find_package(CUDA QUIET)
@@ -34,6 +36,7 @@ if (CUDA_FOUND)
   )
   add_definitions(-DGPU)
 else()
+  dfadsf()
   list(APPEND LIBRARIES "m")
 endif()
 

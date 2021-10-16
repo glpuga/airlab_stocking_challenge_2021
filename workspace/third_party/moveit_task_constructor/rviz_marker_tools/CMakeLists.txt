@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.1.3)
 project(rviz_marker_tools)
 
-add_compile_options(-Wno-error=shadow)
+add_compile_options(-Wno-error=shadow -Wno-error=null-dereference)
 
 find_package(catkin REQUIRED COMPONENTS
 	geometry_msgs

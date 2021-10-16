@@ -3,6 +3,8 @@
   <include file="$(find ek_utils)/launch/rviz_tiago_moveit.launch" />
   <include file="$(find ek_utils)/launch/joystick_teleop.launch" />
 
+  <include file="$(find ek_challenger)/launch/darknet.launch" />
+
   <include file="$(find ek_challenger)/launch/octomap_server.launch" />
 
 </launch>

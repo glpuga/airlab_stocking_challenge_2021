@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<launch>
+
+  <!-- Start darknet and ros wrapper -->
+  <include file="$(find darknet_ros)/launch/darknet_ros.launch">
+    <arg name="image"               value="/xtion/rgb/image_rect_color" />
+    <arg name="yolo_weights_path"   value="$(find ek_challenger)/data/net/backup" />
+    <arg name="yolo_config_path"    value="$(find ek_challenger)/data/net/cfg" />
+    <arg name="ros_param_file"      value="$(find ek_challenger)/config/ros.yaml"/>
+    <arg name="network_param_file"  value="$(find ek_challenger)/config/yolov4-airlab.yaml"/>
+   </include>
+
+</launch>
