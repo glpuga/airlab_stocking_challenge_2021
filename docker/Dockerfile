@@ -45,41 +45,12 @@ RUN /bin/sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) 
  && apt-key add /tmp/ros.key \
  && apt update \
  && apt install -y \
-    # ros-${DIST}-velodyne-simulator \
+    ros-${DIST}-moveit-resources-panda-moveit-config \
+    ros-${DIST}-rosparam-shortcuts \
  && rosdep init \
  && apt clean
 
 # [[[ Team dependencies end here (move quick additions above before submission) ]]]
-
-# Install a recent version of cmake, required to be able to build the latest version of Darknet.
-# The one already present in the ubuntu repositories is not recent enough.
-RUN sudo apt update \
- && sudo apt install -y gpg wget \
- && wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | sudo tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null \
- && echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ bionic main' | sudo tee /etc/apt/sources.list.d/kitware.list >/dev/null \
- && sudo apt-get update \
- && sudo rm /usr/share/keyrings/kitware-archive-keyring.gpg \
- && sudo apt-get install -y kitware-archive-keyring \
- && sudo apt-get install -y cmake \
- && apt clean
-
-
-# Install nvidia CUDA
-RUN apt update \
- && apt install -y \
-    software-properties-common \
- && apt clean
-
-# Build Darknet from source and install within /opt
-WORKDIR /root/build
-RUN git clone https://github.com/AlexeyAB/darknet.git \
- && cd darknet \
- && git checkout 9ff8653d999c8a22bc8f1ff4f4a8a3cc5b63d255 \
- && mkdir -p build_release && cd build_release \
-# && cmake .. \
-# && cmake --build . --target install -- -j$(expr `nproc` - 4) \
- && echo end
-RUN mv /root/build/darknet /opt/darknet
 
 # #####
 #
@@ -113,18 +84,17 @@ RUN mkdir -p /home/$USER/ws/src \
 # Quick package additions go here
 #
 
-# Add extra ROS packages here
-RUN apt update \
- && apt install -y \
-    ros-${DIST}-moveit-resources-panda-moveit-config \
-    ros-${DIST}-rosparam-shortcuts \
- && apt clean
+# # Add extra ROS packages here
+# RUN apt update \
+#  && apt install -y \
+#     # extra pkgs \
+#  && apt clean
 
-# Install extra tools tools
-RUN apt update \
- && apt install -y \
-    # tmux \
- && apt clean 
+# # Install extra tools tools
+# RUN apt update \
+#  && apt install -y \
+#     # extra apps \
+#  && apt clean 
 
 # #####
 #
