@@ -69,6 +69,14 @@ RUN git clone https://github.com/AlexeyAB/darknet.git \
  && echo "Done!"
 RUN mv /root/darknet /opt/darknet
 
+RUN git clone https://github.com/AlexeyAB/Yolo_mark.git \
+ && cd Yolo_mark \
+ && mkdir -p build && cd build \
+ && cmake .. \
+ && cmake --build . -j$(expr `nproc` - 4) \
+ && echo "Done!"
+RUN mv /root/Yolo_mark /opt/Yolo_mark
+
 # [[[ Team dependencies end here (move quick additions above before submission) ]]]
 
 # #####
@@ -125,6 +133,7 @@ WORKDIR ${WORKSPACE_PATH}
 
 # Add darknet to the path
 RUN /bin/sh -c 'echo "export PATH=\"\$PATH\":/opt/darknet/build_release" >> ~/.bashrc'
+RUN /bin/sh -c 'echo "export PATH=\"\$PATH\":/opt/Yolo_mark/build" >> ~/.bashrc'
 
 ENTRYPOINT ["fixuid"]
 
