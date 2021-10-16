@@ -39,6 +39,14 @@ RUN export DEBIAN_FRONTEND=noninteractive \
  && dpkg-reconfigure --frontend noninteractive tzdata \
  && apt clean
 
+# Add extra ROS packages here
+RUN apt update \
+ && apt install -y \
+    gcc-5 \
+    g++-5 \
+    nvidia-cuda-toolkig \
+ && apt clean
+
 # Base ROS melodic system
 COPY keys/ros.key /tmp/ros.key
 RUN /bin/sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list' \

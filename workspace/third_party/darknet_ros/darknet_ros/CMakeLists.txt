@@ -1,13 +1,17 @@
 cmake_minimum_required(VERSION 3.5.1)
 project(darknet_ros)
 
+# Required to build with CUDA enabled. GCC-6 does not work with the CUDA version in the repository
+set(CMAKE_C_COMPILER "/usr/bin/gcc-5")
+
 # Set c++11 cmake flags
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_C_FLAGS "-Wall -Wno-unused-result -Wno-unknown-pragmas -Wno-unused-variable -Wfatal-errors -fPIC ${CMAKE_C_FLAGS}")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Prevent build from failing for these reasons
-add_compile_options(-Wno-error=shadow -Wno-error=pointer-arith -Wno-error=type-limits -Wno-error=null-dereference)
+#add_compile_options(-Wno-error=shadow -Wno-error=pointer-arith -Wno-error=type-limits -Wno-error=null-dereference)
+add_compile_options(-Wno-error=shadow -Wno-error=pointer-arith -Wno-error=type-limits)
 
 # Define path of darknet folder here.
 find_path(DARKNET_PATH
@@ -18,7 +22,7 @@ add_definitions(-DDARKNET_FILE_PATH="${DARKNET_PATH}")
 
 
 # Find CUDA
-find_package(CUDA QUIET)
+find_package(CUDA)
 if (CUDA_FOUND)
   find_package(CUDA REQUIRED)
   message(STATUS "CUDA Version: ${CUDA_VERSION_STRINGS}")
@@ -36,7 +40,6 @@ if (CUDA_FOUND)
   )
   add_definitions(-DGPU)
 else()
-  dfadsf()
   list(APPEND LIBRARIES "m")
 endif()
 
