@@ -2,11 +2,11 @@
 
 <launch>
 
-  <arg name="network_data_path"   value="/home/$(env USER)/darknet" />
+  <arg name="network_data_path"   value="/home/user/darknet" />
 
   <!-- Start darknet and ros wrapper -->
   <include file="$(find darknet_ros)/launch/darknet_ros.launch">
-    <arg name="image"               value="/xtion/rgb/image_rect_color" />
+    <arg name="image"               value="/xtion/rgb/image_raw" />
     <arg name="yolo_weights_path"   value="$(arg network_data_path)/net/backup" />
     <arg name="yolo_config_path"    value="$(arg network_data_path)/net/cfg" />
     <arg name="ros_param_file"      value="$(find ek_challenger)/config/ros.yaml"/>
