@@ -83,10 +83,6 @@ RUN curl -SsL https://github.com/boxboat/fixuid/releases/download/v0.4/fixuid-0.
 RUN adduser $USER sudo \
  && echo "$USER ALL=NOPASSWD: ALL" >> /etc/sudoers.d/$USER
 
-RUN mkdir -p /home/$USER/ws/src \
- && mkdir -p /home/$USER/darknet \
- && chown -R $USER: /home/$USER/ws
-
 # #####
 #
 # Quick package additions go here
@@ -114,17 +110,21 @@ USER $USER:$GROUP
 
 RUN rosdep update
 
+RUN sudo mkdir -p /home/$USER/ws/src \
+ && sudo chown ${USER}:${GROUP} -R /home/$USER/ws/src
+
 # Download the trained darknet_ros networks and configuration
-RUN /bin/sh -c 'mkdir -p ~/darknet/' \
- && cd ~/darknet \
- && curl -sL "https://www.dropbox.com/s/q120jcxr1e5k17a/trained_network.tgz?dl=0" -o network.tgz \
+WORKDIR /home/${USER}/
+RUN mkdir -p darknet/ \
+ && cd darknet/ \
+ && curl -sL http://www.dropbox.com/s/q120jcxr1e5k17a/trained_network.tgz\?dl=0 -o network.tgz \
  && tar xvfz network.tgz
 
 # Build and source your ros packages 
-WORKDIR /home/user/sim_ws
-RUN rm -rf /home/user/sim_ws/devel \
- && rm -rf /home/user/sim_ws/build \
- && rm -rf /home/user/sim_ws/logs \
+WORKDIR /home/${USER}/sim_ws
+RUN rm -rf /home/${USER}/sim_ws/devel \
+ && rm -rf /home/${USER}/sim_ws/build \
+ && rm -rf /home/${USER}/sim_ws/logs \
  && bash -c "source /opt/pal/ferrum/setup.bash && catkin_make" \
  && echo 'source /home/user/sim_ws/devel/setup.bash' >> ~/.bashrc 
 

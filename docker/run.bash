@@ -53,5 +53,4 @@ nvidia-docker run -it \
   --security-opt seccomp=unconfined \
   -u $USERID:$GROUPID \
   --mount type=bind,source=${LOCAL_REPO_PATH}/workspace,target=/home/user/ws/src/workspace \
-  --mount type=bind,source=${LOCAL_REPO_PATH}/darknet,target=/home/user/darknet \
   $IMAGE_NAME
