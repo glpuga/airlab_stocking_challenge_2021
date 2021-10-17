@@ -1,0 +1,17 @@
+material vrc/random_noise_wall
+{
+	receive_shadows off
+	technique
+	{
+		pass
+		{
+			texture_unit
+			{
+				texture random_noise_wall.png
+				filtering anistropic
+				max_anisotropy 16
+				scale 0.2 0.2
+			}
+		}
+	}
+}

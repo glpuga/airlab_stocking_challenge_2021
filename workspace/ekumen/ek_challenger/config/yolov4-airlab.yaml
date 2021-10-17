@@ -1,0 +1,11 @@
+yolo_model:
+
+  config_file:
+    name: yolov4-airlab.cfg
+  weight_file:
+    name: yolov4-airlab_best.weights
+  threshold:
+    value: 0.1
+  detection_classes:
+    names:
+      - can

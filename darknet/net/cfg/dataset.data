@@ -1,0 +1,5 @@
+classes = 1
+train  = dataset/dataset_training.txt
+valid  = dataset/dataset_evaluation.txt
+names  = dataset/labels.names
+backup = net/backup/

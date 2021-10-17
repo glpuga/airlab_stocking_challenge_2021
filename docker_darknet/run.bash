@@ -17,7 +17,7 @@
 #
 #
 
-IMAGE_NAME="airlab_stacking_challenge_2021_devel_env"
+IMAGE_NAME="airlab_stacking_challenge_2021_darknet_env"
 
 # Make sure processes in the container can connect to the x server
 # Necessary so gazebo can create a context for OpenGL rendering (even headless)
@@ -52,5 +52,5 @@ nvidia-docker run -it \
   --rm \
   --security-opt seccomp=unconfined \
   -u $USERID:$GROUPID \
-  --mount type=bind,source=${LOCAL_REPO_PATH}/workspace,target=/home/user/ws/src/workspace \
+  --mount type=bind,source=${LOCAL_REPO_PATH}/darknet,target=/home/user/workspace \
   $IMAGE_NAME
