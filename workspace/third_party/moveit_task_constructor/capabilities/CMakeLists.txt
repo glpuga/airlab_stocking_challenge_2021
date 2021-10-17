@@ -3,7 +3,7 @@ project(moveit_task_constructor_capabilities)
 
 add_compile_options(-std=c++14)
 
-add_compile_options(-Wno-error=shadow)
+add_compile_options(-Wno-error=shadow -Wno-error=null-dereference)
 
 find_package(catkin REQUIRED COMPONENTS
   actionlib

@@ -31,7 +31,7 @@ catkin_package(
 set(CMAKE_CXX_STANDARD 14)
 
 add_compile_options(-fvisibility-inlines-hidden)
-add_compile_options(-Wno-error=shadow)
+add_compile_options(-Wno-error=shadow -Wno-error=null-dereference)
 
 set(PROJECT_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/include/moveit/task_constructor)
 
