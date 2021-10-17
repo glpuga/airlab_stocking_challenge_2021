@@ -1,8 +1,12 @@
 <launch>
 
+  <arg name="auto" default="false" />
+
   <include file="$(find ek_utils)/launch/rviz_tiago_moveit.launch" />
   <include file="$(find ek_utils)/launch/joystick_teleop.launch" />
 
   <include file="$(find ek_challenger)/launch/octomap_server.launch" />
+
+  <include file="$(find ek_challenger)/launch/autonomy.launch" if="$(arg auto)" />
 
 </launch>

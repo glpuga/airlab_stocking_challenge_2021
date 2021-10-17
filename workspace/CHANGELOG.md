@@ -1,5 +1,33 @@
 # Changelog
 
+### Oct 17 - Added a simple autonomy module based on BehaviorTree.CPP
+
+Added a simple BT to use as base for more complex behaviors. For the time being it only has a node to sleep for a number of seconds, and another to move the robot to a target pose using move base.
+
+To launch on a demo, launch the simulation (both gazebo and ek_challengers.launch extra nodes) and then execute:
+
+```
+roslaunch ek_challenger autonomy.launch
+```
+
+The BT can be monitored using BT. For that open a new terminal, run:
+```
+roslaunch groot Groot
+```
+and then click "Connect".
+
+### Oct 17 - Added darknet and darknet ros
+
+Added three modules
+
+- A synthetic dataset generator for darknet.
+- A new docker container to train a network on that data.
+- darknet_ros in the devel container to detect object on images based on that network.
+
+Unfortunately, darknet_ros does not seem to play ball with the PAL base container, rendering it almost unusable.
+
+Also while investigating that, it was found that dataset generated with the dataset generator led to overfitting. This is properly discussed in an issue in the repository with some ideas to improve this if the problem with darknet_ros is solved.
+
 ### Oct 10 - Added BehaviorTree.CPP to third-party
 
 - Added the BT library to third-party. The same "Wno-error=shadow" fix was necessary here as with the MTC.

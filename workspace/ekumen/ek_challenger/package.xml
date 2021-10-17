@@ -60,6 +60,9 @@
   <exec_depend>rospy</exec_depend>
 
 
+  <depend>behaviortree_cpp_v3</depend>
+  <depend>tf2</depend>
+
   <!-- The export tag contains other, unspecified, tags -->
   <export>
     <!-- Other tools can request additional information be placed here -->
