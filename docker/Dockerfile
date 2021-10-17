@@ -111,7 +111,7 @@ USER $USER:$GROUP
 RUN rosdep update
 
 RUN sudo mkdir -p /home/$USER/ws/src \
- && sudo chown ${USER}:${GROUP} -R /home/$USER/ws/src
+ && sudo chown ${USER}:${GROUP} -R /home/$USER/ws
 
 # Download the trained darknet_ros networks and configuration
 WORKDIR /home/${USER}/
