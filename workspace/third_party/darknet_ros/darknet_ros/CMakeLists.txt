@@ -9,7 +9,6 @@ add_compile_options(-Wno-error=shadow -Wno-error=pointer-arith -Wno-error=type-l
 
 # Set c++11 cmake flags
 set(CMAKE_CXX_STANDARD 11)
-#set(CMAKE_C_FLAGS "-Wall -Wno-unused-result -Wno-unknown-pragmas -Wno-unused-variable -fPIC ${CMAKE_C_FLAGS}")
 set(CMAKE_C_FLAGS "-Wall -Wno-unused-result -Wno-unknown-pragmas -Wno-unused-variable -fPIC")
 set(CMAKE_CXX_FLAGS "-Wall -Wno-unused-result -Wno-unknown-pragmas -Wno-unused-variable -fPIC")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
