@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.1.3)
 project(moveit_task_constructor_demo)
 
-add_compile_options(-Wno-error=shadow)
+add_compile_options(-Wno-error=shadow -Wno-error=null-dereference)
 
 if(NOT "${CMAKE_CXX_STANDARD}")
   set(CMAKE_CXX_STANDARD 14)

@@ -5,7 +5,7 @@ project(behaviortree_cpp_v3)
 set(CMAKE_CONFIG_PATH ${CMAKE_MODULE_PATH}  "${CMAKE_CURRENT_LIST_DIR}/cmake")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CONFIG_PATH}")
 
-add_compile_options(-Wno-error=shadow)
+add_compile_options(-Wno-error=shadow -Wno-error=null-dereference)
 
 #---- Enable C++14 ----
 set(CMAKE_CXX_STANDARD 14)

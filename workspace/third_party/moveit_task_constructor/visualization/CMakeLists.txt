@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.1.3)
 project(moveit_task_constructor_visualization)
 
-add_compile_options(-Wno-error=shadow)
+add_compile_options(-Wno-error=shadow -Wno-error=null-dereference)
 
 find_package(catkin REQUIRED COMPONENTS
 	moveit_core
