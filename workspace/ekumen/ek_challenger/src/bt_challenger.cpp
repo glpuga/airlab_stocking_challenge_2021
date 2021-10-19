@@ -4,6 +4,7 @@
 
 // standard library
 #include <string>
+#include <memory>
 
 // third party
 #include <behaviortree_cpp_v3/loggers/bt_cout_logger.h>
@@ -13,8 +14,13 @@
 
 // project
 #include <ek_challenger/bt_challenger.hpp>
+#include <ek_challenger/nodes/get_arm_joints_for_pose_action_node.hpp>
+#include <ek_challenger/nodes/gripper_control_action_node.hpp>
+#include <ek_challenger/nodes/head_control_action_node.hpp>
 #include <ek_challenger/nodes/pause_action_node.hpp>
 #include <ek_challenger/nodes/move_base_action_node.hpp>
+#include <ek_challenger/nodes/set_arm_joints_pose_action_node.hpp>
+#include <ek_challenger/nodes/torso_control_action_node.hpp>
 
 namespace ek_challenger
 {
@@ -54,7 +60,24 @@ namespace ek_challenger
     void BehaviorTreeNode::registerNodes(BT::BehaviorTreeFactory &factory)
     {
         factory.registerNodeType<PauseActionNode>("Pause");
+        factory.registerNodeType<HeadControlActionNode>("HeadControl");
         factory.registerNodeType<MoveBaseActionNode>("MoveBase");
+        factory.registerNodeType<TorsoControlActionNode>("TorsoControl");
+
+        factory.registerBuilder<GripperControlActionNode>("GripperControlRight", [](const std::string &name, const BT::NodeConfiguration &config)
+                                                          { return std::make_unique<GripperControlActionNode>(name, config, "gripper_right"); });
+        factory.registerBuilder<GripperControlActionNode>(
+            "GripperControlLeft", [](const std::string &name, const BT::NodeConfiguration &config)
+            { return std::make_unique<GripperControlActionNode>(name, config, "gripper_left"); });
+
+        factory.registerBuilder<SetArmsJointPoseActionNode>(
+            "SetArmJointsRight", [](const std::string &name, const BT::NodeConfiguration &config)
+            { return std::make_unique<SetArmsJointPoseActionNode>(name, config, "arm_right"); });
+        factory.registerBuilder<SetArmsJointPoseActionNode>(
+            "SetArmJointsLeft", [](const std::string &name, const BT::NodeConfiguration &config)
+            { return std::make_unique<SetArmsJointPoseActionNode>(name, config, "arm_left"); });
+
+        factory.registerNodeType<GetArmJointsForPoseActionNode>("GetArmJointsForPose");
     }
 
 }

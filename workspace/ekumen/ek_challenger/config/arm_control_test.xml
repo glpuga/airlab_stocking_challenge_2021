@@ -2,28 +2,15 @@
 
     <BehaviorTree ID="BehaviorTree">
         <Sequence>
-            <HeadControl pitch="0.0" yaw="90.0" />
-            <TorsoControl relative_height="0.4" />
-            <MoveBase goal="0;-3;0"/>
             <GetArmJointsForPose pose="UPTRAY" joints_pose="{joints_pose}" />
             <SetArmJointsLeft joints_pose="{joints_pose}" />
             <SetArmJointsRight joints_pose="{joints_pose}" />
-            <HeadControl pitch="-45.0" yaw="90.0" />
-            <MoveBase goal="1;-3;0"/>
             <GetArmJointsForPose pose="EXTENDED" joints_pose="{joints_pose}" />
             <SetArmJointsLeft joints_pose="{joints_pose}" />
             <SetArmJointsRight joints_pose="{joints_pose}" />
-            <HeadControl pitch="45.0" yaw="90.0" />
-            <MoveBase goal="2;-3;0"/>
             <GetArmJointsForPose pose="GRIPPING" joints_pose="{joints_pose}" />
             <SetArmJointsLeft joints_pose="{joints_pose}" />
             <SetArmJointsRight joints_pose="{joints_pose}" />
-            <HeadControl pitch="0.0" yaw="90.0" />
-            <MoveBase goal="3;-3;0"/>
-            <HeadControl pitch="0.0" yaw="120.0" />
-            <TorsoControl relative_height="1" />
-            <TorsoControl relative_height="0" />
-            <TorsoControl relative_height="0.4" />
             <GetArmJointsForPose pose="REST" joints_pose="{joints_pose}" />
             <SetArmJointsLeft joints_pose="{joints_pose}" />
             <SetArmJointsRight joints_pose="{joints_pose}" />

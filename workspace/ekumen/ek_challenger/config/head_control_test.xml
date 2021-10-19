@@ -1,0 +1,12 @@
+<root main_tree_to_execute="BehaviorTree">
+
+    <BehaviorTree ID="BehaviorTree">
+        <Sequence>
+            <HeadControl      pitch="0.0" yaw="10.0" />
+            <HeadControl      pitch="0.0" yaw="170.0" />
+            <HeadControl      pitch="-80.0" yaw="90.0" />
+            <HeadControl      pitch="80.0" yaw="90.0" />
+        </Sequence>
+    </BehaviorTree>
+
+</root>

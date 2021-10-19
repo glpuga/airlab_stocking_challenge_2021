@@ -1,43 +1,28 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(ek_challenger)
 
-## Compile as C++11, supported in ROS Kinetic and newer
-add_compile_options(-std=c++11 -Wall -Wextra -Werror -Wno-error=shadow)
+add_compile_options(-std=c++14 -Wall -Wextra -Werror -Wno-error=shadow)
 
-## Find catkin macros and libraries
 find_package(catkin REQUIRED COMPONENTS
   octomap_ros
   behaviortree_cpp_v3
+  moveit_ros_planning_interface
   roscpp
   rospy
   tf2
 )
-
-## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
-
-
-## Uncomment this if the package has a setup.py. This macro ensures
-## modules and global scripts declared therein get installed
-## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
-# catkin_python_setup()
-
-
-
-###################################
-## catkin specific configuration ##
-###################################
-## The catkin_package macro generates cmake config files for your package
-## Declare things to be passed to dependent projects
-## INCLUDE_DIRS: uncomment this if your package contains header files
-## LIBRARIES: libraries you create in this project that dependent projects also need
-## CATKIN_DEPENDS: catkin_packages dependent projects also need
-## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-  INCLUDE_DIRS include
-#  LIBRARIES ek_challenger
-  CATKIN_DEPENDS octomap_ros roscpp rospy behaviortree_cpp_v3 tf2
-#  DEPENDS system_lib
+  INCLUDE_DIRS
+    include
+# LIBRARIES ek_challenger
+  CATKIN_DEPENDS
+    behaviortree_cpp_v3
+    moveit_ros_planning_interface
+    octomap_ros
+    roscpp
+    rospy
+    tf2
+# DEPENDS system_lib
 )
 
 ###########
@@ -51,7 +36,12 @@ include_directories(
 
 add_library(bt_challenger
   src/bt_challenger.cpp
+  src/nodes/get_arm_joints_for_pose_action_node.cpp
+  src/nodes/gripper_control_action_node.cpp
+  src/nodes/head_control_action_node.cpp
   src/nodes/move_base_action_node.cpp
+  src/nodes/set_arm_joints_pose_action_node.cpp
+  src/nodes/torso_control_action_node.cpp
   src/nodes/pause_action_node.cpp
 )
 target_link_libraries(bt_challenger
@@ -74,21 +64,6 @@ add_dependencies(ek_challenger_node
   ${catkin_EXPORTED_TARGETS}
 )
 
-
-## Rename C++ executable without prefix
-## The above recommended prefix causes long target names, the following renames the
-## target back to the shorter version for ease of user use
-## e.g. "rosrun someones_pkg node" instead of "rosrun someones_pkg someones_pkg_node"
-# set_target_properties(${PROJECT_NAME}_node PROPERTIES OUTPUT_NAME node PREFIX "")
-
-## Add cmake target dependencies of the executable
-## same as for the library above
-# add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
-## Specify libraries to link a library or executable target against
-# target_link_libraries(${PROJECT_NAME}_node
-#   ${catkin_LIBRARIES}
-# )
 
 #############
 ## Install ##

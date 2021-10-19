@@ -1,0 +1,16 @@
+<root main_tree_to_execute="BehaviorTree">
+
+    <BehaviorTree ID="BehaviorTree">
+        <Sequence>
+            <Pause                time_limit_sec="1" />
+            <GripperControlRight  relative_gripper_gap="1.0" />
+            <Pause                time_limit_sec="1" />
+            <GripperControlLeft   relative_gripper_gap="1.0" />
+            <Pause                time_limit_sec="1" />
+            <GripperControlRight  relative_gripper_gap="0.0" />
+            <Pause                time_limit_sec="1" />
+            <GripperControlLeft   relative_gripper_gap="0.0" />
+        </Sequence>
+    </BehaviorTree>
+
+</root>

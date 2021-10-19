@@ -2,10 +2,10 @@
 
 <launch>
 
-  <arg name="tree_description_file" value="main_tree.xml" />
+  <arg name="tree_xml" default="main_tree.xml" />
 
   <node name="ek_challenger_node" pkg="ek_challenger" type="ek_challenger_node" respawn="true" output="screen">
-    <param name="tree_description_filepath" value="$(find ek_challenger)/config/$(arg tree_description_file)" />
+    <param name="tree_description_filepath" value="$(find ek_challenger)/config/$(arg tree_xml)" />
   </node>
 
 </launch>
