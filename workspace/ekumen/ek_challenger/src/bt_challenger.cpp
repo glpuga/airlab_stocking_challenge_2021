@@ -14,6 +14,7 @@
 
 // project
 #include <ek_challenger/bt_challenger.hpp>
+#include <ek_challenger/nodes/backtrack_action_node.hpp>
 #include <ek_challenger/nodes/get_arm_joints_for_pose_action_node.hpp>
 #include <ek_challenger/nodes/gripper_control_action_node.hpp>
 #include <ek_challenger/nodes/head_control_action_node.hpp>
@@ -63,6 +64,7 @@ namespace ek_challenger
         factory.registerNodeType<HeadControlActionNode>("HeadControl");
         factory.registerNodeType<MoveBaseActionNode>("MoveBase");
         factory.registerNodeType<TorsoControlActionNode>("TorsoControl");
+        factory.registerNodeType<BacktrackActionNode>("Backtrack");
 
         factory.registerBuilder<GripperControlActionNode>("GripperControlRight", [](const std::string &name, const BT::NodeConfiguration &config)
                                                           { return std::make_unique<GripperControlActionNode>(name, config, "gripper_right"); });

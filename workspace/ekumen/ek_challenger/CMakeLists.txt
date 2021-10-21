@@ -36,6 +36,7 @@ include_directories(
 
 add_library(bt_challenger
   src/bt_challenger.cpp
+  src/nodes/backtrack_action_node.cpp
   src/nodes/get_arm_joints_for_pose_action_node.cpp
   src/nodes/gripper_control_action_node.cpp
   src/nodes/head_control_action_node.cpp
