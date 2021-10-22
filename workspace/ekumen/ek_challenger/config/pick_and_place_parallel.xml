@@ -1,0 +1,31 @@
+<root main_tree_to_execute="BehaviorTree">
+
+    <BehaviorTree ID="BehaviorTree">
+        <Sequence>
+            <MoveBase goal="-1;-1;0"/>
+            <GetArmJointsForPose pose="REST" joints_pose="{joints_pose}" />
+            <SetArmJointsLeft joints_pose="{joints_pose}" />
+            <SetArmJointsRight joints_pose="{joints_pose}" />
+            <Parallel success_threshold="2" failure_threshold="2">
+                <Repeat num_cycles="-1">
+                    <Sequence>
+                        <CreateObstacle ns="left" object_id="test_object_l1" pose="base_link; 0.7; 0.0; 1.0; 0.0; 0.0; 0.0" />
+                        <PickAndPlaceLeft object_id="test_object_l1" target_pose="base_link;-0.1; 0.0; 1.1; 0.0; 0.0; 0.0" />
+                        <CreateObstacle ns="left" object_id="test_object_l2" pose="base_link; 0.7; 0.2; 1.0; 0.0; 0.0; 0.0" />
+                        <PickAndPlaceLeft object_id="test_object_l2" target_pose="base_link;-0.2; 0.0; 1.1; 0.0; 0.0; 0.0" />
+                    </Sequence>
+                </Repeat>
+                <Repeat num_cycles="-1">
+                    <Sequence>
+                        <CreateObstacle ns="right" object_id="test_object_r1" pose="base_link; 0.7;-0.1; 0.8; 0.0; 0.0; 0.0" />
+                        <PickAndPlaceRight object_id="test_object_r1" target_pose="base_link; 0.7;-0.4; 0.8; 0.0; 0.0; 0.0" />
+                        <CreateObstacle ns="right" object_id="test_object_r2" pose="base_link; 0.7;-0.2; 0.8; 0.0; 0.0; 0.0" />
+                        <PickAndPlaceRight object_id="test_object_r2" target_pose="base_link; 0.7;-0.5; 0.8; 0.0; 0.0; 0.0" />
+                    </Sequence>
+                </Repeat>
+            </Parallel >
+        </Sequence>
+    </BehaviorTree>
+
+
+</root>

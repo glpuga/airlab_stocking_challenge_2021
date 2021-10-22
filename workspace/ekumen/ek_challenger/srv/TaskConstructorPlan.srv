@@ -1,0 +1,5 @@
+string robot_side
+string source_object_id
+geometry_msgs/PoseStamped target_pose
+---
+bool result

@@ -11,35 +11,36 @@
 #include <behaviortree_cpp_v3/behavior_tree.h>
 
 // project
-#include <ek_challenger/nodes/set_arm_joints_pose_action_node.hpp>
 #include <ek_challenger/arm_joints_pose.hpp>
+#include <ek_challenger/nodes/set_arm_joints_pose_action_node.hpp>
 
-namespace ek_challenger
-{
+namespace ek_challenger {
 
-  class SetArmsJointPoseActionNode : public BT::AsyncActionNode
-  {
-  public:
-    SetArmsJointPoseActionNode(const std::string &name, const BT::NodeConfiguration &config, const std::string &move_group)
-        : AsyncActionNode(name, config), move_group_{move_group}
-    {
-    }
+class SetArmsJointPoseActionNode : public BT::AsyncActionNode {
+ public:
+  SetArmsJointPoseActionNode(const std::string &name,
+                             const BT::NodeConfiguration &config,
+                             const std::string &move_group,
+                             const std::string &moveit_namespace)
+      : AsyncActionNode(name, config),
+        move_group_{move_group},
+        moveit_namespace_{moveit_namespace} {}
 
-    static BT::PortsList providedPorts()
-    {
-      return {
-          BT::InputPort<ArmJointsPose>("joints_pose"),
-      };
-    }
+  static BT::PortsList providedPorts() {
+    return {
+        BT::InputPort<ArmJointsPose>("joints_pose"),
+    };
+  }
 
-    BT::NodeStatus tick() override;
+  BT::NodeStatus tick() override;
 
-    virtual void halt() override;
+  virtual void halt() override;
 
-  private:
-    std::string move_group_;
+ private:
+  const std::string move_group_;
+  const std::string moveit_namespace_;
 
-    std::atomic_bool _halt_requested;
-  };
+  std::atomic_bool _halt_requested;
+};
 
-}
+}  // namespace ek_challenger

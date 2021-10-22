@@ -6,11 +6,33 @@ add_compile_options(-std=c++14 -Wall -Wextra -Werror -Wno-error=shadow)
 find_package(catkin REQUIRED COMPONENTS
   octomap_ros
   behaviortree_cpp_v3
+  message_generation
   moveit_ros_planning_interface
+  moveit_task_constructor_core
   roscpp
   rospy
   tf2
 )
+
+##############
+## Messages ##
+##############
+
+add_service_files(
+ FILES
+  TaskConstructorPlan.srv
+  TaskConstructorExec.srv
+)
+
+generate_messages(
+ DEPENDENCIES
+ geometry_msgs
+)
+
+##############
+## Package  ##
+##############
+
 catkin_package(
   INCLUDE_DIRS
     include
@@ -18,12 +40,16 @@ catkin_package(
   CATKIN_DEPENDS
     behaviortree_cpp_v3
     moveit_ros_planning_interface
+    moveit_task_constructor_core
     octomap_ros
     roscpp
     rospy
     tf2
 # DEPENDS system_lib
 )
+
+add_subdirectory(fmt)
+
 
 ###########
 ## Build ##
@@ -37,16 +63,20 @@ include_directories(
 add_library(bt_challenger
   src/bt_challenger.cpp
   src/nodes/backtrack_action_node.cpp
+  src/nodes/create_obstacle_action_node
   src/nodes/get_arm_joints_for_pose_action_node.cpp
   src/nodes/gripper_control_action_node.cpp
   src/nodes/head_control_action_node.cpp
   src/nodes/move_base_action_node.cpp
+  src/nodes/pick_and_place_action_node.cpp
   src/nodes/set_arm_joints_pose_action_node.cpp
   src/nodes/torso_control_action_node.cpp
   src/nodes/pause_action_node.cpp
-)
+  src/tasks/pick_place_task.cpp
+  )
 target_link_libraries(bt_challenger
   ${catkin_LIBRARIES}
+  fmt::fmt
 )
 add_dependencies(bt_challenger
   ${${PROJECT_NAME}_EXPORTED_TARGETS}
@@ -61,6 +91,19 @@ target_link_libraries(ek_challenger_node
   ${catkin_LIBRARIES}
 )
 add_dependencies(ek_challenger_node
+  ${${PROJECT_NAME}_EXPORTED_TARGETS}
+  ${catkin_EXPORTED_TARGETS}
+)
+
+add_executable(task_constructor_node
+  src/task_constructor_node.cpp
+  src/task_constructor_node_runner.cpp
+)
+target_link_libraries(task_constructor_node
+  bt_challenger  
+  ${catkin_LIBRARIES}
+)
+add_dependencies(task_constructor_node
   ${${PROJECT_NAME}_EXPORTED_TARGETS}
   ${catkin_EXPORTED_TARGETS}
 )

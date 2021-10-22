@@ -1,12 +1,26 @@
 <launch>
 
-  <arg name="auto" default="false" />
+  <arg name="auto" default="true" />
+  <arg name="tree" default="parallel_arm_control_test.xml" />
 
-  <include file="$(find ek_utils)/launch/rviz_tiago_moveit.launch" />
-  <include file="$(find ek_utils)/launch/joystick_teleop.launch" />
+  <arg name="rviz" default="false" />
+  <arg name="joystick" default="false" />
+
+  <include file="$(find ek_utils)/launch/rviz_tiago_moveit.launch" if="$(arg rviz)" />
+  <include file="$(find ek_utils)/launch/joystick_teleop.launch" if="$(arg joystick)" />
 
   <include file="$(find ek_challenger)/launch/octomap_server.launch" />
 
-  <include file="$(find ek_challenger)/launch/autonomy.launch" if="$(arg auto)" />
+  <include file="$(find ek_challenger)/launch/autonomy.launch" if="$(arg auto)">
+    <arg name="tree" value="$(arg tree)" />
+  </include>
+
+  <include file="$(find ek_challenger)/launch/move_group.launch">
+    <arg name="side" value="left" />
+  </include>
+
+  <include file="$(find ek_challenger)/launch/move_group.launch">
+    <arg name="side" value="right" />
+  </include>
 
 </launch>

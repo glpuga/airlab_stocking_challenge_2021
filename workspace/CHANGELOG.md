@@ -1,5 +1,15 @@
 # Changelog
 
+### Oct 24 - Multiple new features
+
+New code adds:
+
+- Task constructor planning!
+- concurrent execution/planning with for arm movements! (gripper, joint pose planning, task constructor planning).
+- Clean up of node names and BTs.
+
+Also added the `fmt` library to use in the task Constructor code. Because of the current issues with the apt package sources from PAL, the library was added as a cmake dependency project.
+
 ### Oct 17 - Added a simple autonomy module based on BehaviorTree.CPP
 
 Added a simple BT to use as base for more complex behaviors. For the time being it only has a node to sleep for a number of seconds, and another to move the robot to a target pose using move base.

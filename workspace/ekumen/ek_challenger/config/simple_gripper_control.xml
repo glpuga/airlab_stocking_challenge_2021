@@ -1,0 +1,15 @@
+<root main_tree_to_execute="BehaviorTree">
+
+    <BehaviorTree ID="BehaviorTree">
+        <Sequence>
+            <Parallel success_threshold="2" failure_threshold="2">
+                <GripperControlRight relative_gripper_gap="1.0" />
+                <GripperControlLeft relative_gripper_gap="1.0" />
+            </Parallel>
+            <Parallel success_threshold="2" failure_threshold="2">
+                <GripperControlRight relative_gripper_gap="0.0" />
+                <GripperControlLeft relative_gripper_gap="0.0" />
+            </Parallel>
+        </Sequence>
+    </BehaviorTree>
+</root>

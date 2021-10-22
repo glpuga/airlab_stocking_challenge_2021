@@ -2,10 +2,12 @@
 
 <launch>
 
-  <arg name="tree_xml" default="main_tree.xml" />
+  <arg name="tree" default="main_tree.xml" />
 
   <node name="ek_challenger_node" pkg="ek_challenger" type="ek_challenger_node" respawn="true" output="screen">
-    <param name="tree_description_filepath" value="$(find ek_challenger)/config/$(arg tree_xml)" />
+    <param name="tree_description_filepath" value="$(find ek_challenger)/config/$(arg tree)" />
+    <remap from="/left/joint_states" to="/joint_states" />
+    <remap from="/right/joint_states" to="/joint_states" />
   </node>
 
 </launch>
