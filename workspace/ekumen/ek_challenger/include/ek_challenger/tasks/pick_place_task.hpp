@@ -40,7 +40,7 @@ class PickPlaceTask {
 
   bool build(const std::string &object_name,
              const geometry_msgs::PoseStamped &target_pose,
-             const bool move_to_home = false);
+             const bool move_to_home = true);
 
   bool plan();
 

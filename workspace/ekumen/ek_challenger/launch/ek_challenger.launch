@@ -1,7 +1,7 @@
 <launch>
 
   <arg name="auto" default="true" />
-  <arg name="tree" default="main_tree.xml" />
+  <arg name="tree" default="competition_mode.xml" />
 
   <arg name="rviz" default="false" />
   <arg name="joystick" default="false" />

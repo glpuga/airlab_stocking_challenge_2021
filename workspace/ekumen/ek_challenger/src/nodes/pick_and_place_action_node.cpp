@@ -3,6 +3,7 @@
  */
 
 // standard library
+#include <mutex>
 #include <string>
 
 // third-party
@@ -18,6 +19,9 @@
 
 BT::NodeStatus PickAndPlaceActionNode::tick() {
   std::string object_id;
+
+  static std::mutex busy_mutex;
+
   if (!getInput<std::string>("object_id", object_id)) {
     throw BT::RuntimeError("missing required input [object_id]");
   }
@@ -31,6 +35,7 @@ BT::NodeStatus PickAndPlaceActionNode::tick() {
   ros::ServiceClient plan_srv =
       nh.serviceClient<ek_challenger::TaskConstructorPlan>(
           "/" + side_ + "/task_constructor_plan");
+
   ros::ServiceClient exec_srv =
       nh.serviceClient<ek_challenger::TaskConstructorExec>(
           "/" + side_ + "/task_constructor_exec");
@@ -49,6 +54,9 @@ BT::NodeStatus PickAndPlaceActionNode::tick() {
   }
 
   {
+    // only one arm at a time can be here
+    std::lock_guard<std::mutex> l{busy_mutex};
+
     ek_challenger::TaskConstructorExec srv;
     if (!exec_srv.call(srv)) {
       return BT::NodeStatus::FAILURE;

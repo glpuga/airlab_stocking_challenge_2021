@@ -24,6 +24,13 @@
 #include <ek_challenger/nodes/pick_and_place_action_node.hpp>
 #include <ek_challenger/nodes/set_arm_joints_pose_action_node.hpp>
 #include <ek_challenger/nodes/torso_control_action_node.hpp>
+#include <ek_challenger/nodes/tray_pick_empty_locus_action_node.hpp>
+#include <ek_challenger/nodes/tray_pick_occupied_locus_action_node.hpp>
+#include <ek_challenger/nodes/tray_release_locus_action_node.hpp>
+#include <ek_challenger/nodes/tray_set_locus_state_action_node.hpp>
+#include <ek_challenger/nodes/tray_update_planning_scene_action_node.hpp>
+#include <ek_challenger/tray_data.hpp>
+#include <ek_challenger/tray_model_table.hpp>
 
 namespace ek_challenger {
 BehaviorTreeNode::BehaviorTreeNode() : nh_{"~"} {
@@ -112,6 +119,92 @@ void BehaviorTreeNode::registerNodes(BT::BehaviorTreeFactory &factory) {
 
   factory.registerNodeType<GetArmJointsForPoseActionNode>(
       "GetArmJointsForPose");
+
+  auto make_pose_stamped = [](const std::string &frame, const double x,
+                              const double y, const double z) {
+    geometry_msgs::PoseStamped pose;
+    pose.header.frame_id = frame;
+    pose.pose.position.x = x;
+    pose.pose.position.y = y;
+    pose.pose.position.z = z;
+    pose.pose.orientation.w = 1;
+    return pose;
+  };
+
+  auto make_pose = [](const double x, const double y) {
+    geometry_msgs::Pose2D pose;
+    pose.x = x;
+    pose.y = y;
+    return pose;
+  };
+
+  TrayData trays;
+
+  trays["table"] = std::make_shared<TrayModelTable>(
+      make_pose_stamped("base_link", 0.6, 0.0, 0.70),
+      std::vector<std::string>{"left", "right"});
+  trays["table"]->addLocus(make_pose(0.1, 0.15), true, 0);
+  trays["table"]->addLocus(make_pose(0.1, 0.05), true, 0);
+  trays["table"]->addLocus(make_pose(0.1, -0.05), true, 0);
+  trays["table"]->addLocus(make_pose(0.1, -0.15), true, 0);
+  trays["table"]->addLocus(make_pose(-0.1, 0.15), true, 0);
+  trays["table"]->addLocus(make_pose(-0.1, 0.05), true, 0);
+  trays["table"]->addLocus(make_pose(-0.1, -0.05), true, 0);
+  trays["table"]->addLocus(make_pose(-0.1, -0.15), true, 0);
+
+  trays["backtray"] = std::make_shared<TrayModelTable>(
+      make_pose_stamped("torso_lift_link", 0.0, 0.0, 0.01),
+      std::vector<std::string>{"left", "right"});
+  trays["backtray"]->addLocus(make_pose(0.08, -0.1), false, 0);
+  trays["backtray"]->addLocus(make_pose(0.08, 0.1), false, 0);
+  trays["backtray"]->addLocus(make_pose(-0.02, -0.1), false, 0);
+  trays["backtray"]->addLocus(make_pose(-0.02, 0.1), false, 0);
+  trays["backtray"]->addLocus(make_pose(-0.12, -0.1), false, 0);
+  trays["backtray"]->addLocus(make_pose(-0.12, 0.1), false, 0);
+
+  trays["shelf"] = std::make_shared<TrayModelTable>(
+      make_pose_stamped("base_link", 0.5, 0.0, 1.00),
+      std::vector<std::string>{"left", "right"});
+  trays["table"]->addLocus(make_pose(0.1, 0.15), false, 0);
+  trays["shelf"]->addLocus(make_pose(0.1, 0.05), false, 0);
+  trays["shelf"]->addLocus(make_pose(0.1, -0.05), false, 0);
+  trays["shelf"]->addLocus(make_pose(0.1, -0.15), false, 0);
+  trays["shelf"]->addLocus(make_pose(-0.1, 0.15), false, 0);
+  trays["shelf"]->addLocus(make_pose(-0.1, 0.05), false, 0);
+  trays["shelf"]->addLocus(make_pose(-0.1, -0.05), false, 0);
+  trays["shelf"]->addLocus(make_pose(-0.1, -0.15), false, 0);
+
+  factory.registerBuilder<TrayUpdatePlanningSceneActionNode>(
+      "TrayUpdatePlanningScene",
+      [=](const std::string &nm, const BT::NodeConfiguration &cfg) {
+        return std::make_unique<TrayUpdatePlanningSceneActionNode>(nm, cfg,
+                                                                   trays);
+      });
+
+  factory.registerBuilder<TrayPickEmptyLocusActionNode>(
+      "TrayPickEmptyLocus",
+      [=](const std::string &nm, const BT::NodeConfiguration &cfg) {
+        return std::make_unique<TrayPickEmptyLocusActionNode>(nm, cfg, trays);
+      });
+
+  factory.registerBuilder<TrayPickOccupiedLocusActionNode>(
+      "TrayPickOccupiedLocus",
+      [=](const std::string &nm, const BT::NodeConfiguration &cfg) {
+        return std::make_unique<TrayPickOccupiedLocusActionNode>(nm, cfg,
+                                                                 trays);
+      });
+
+  factory.registerBuilder<TrayReleaseLocusActionNode>(
+      "TrayReleaseLocus",
+      [=](const std::string &nm, const BT::NodeConfiguration &cfg) {
+        return std::make_unique<TrayReleaseLocusActionNode>(nm, cfg, trays);
+      });
+
+  factory.registerBuilder<TraySetLocusStateActionNode>(
+      "TraySetLocusState",
+      [=](const std::string &nm, const BT::NodeConfiguration &cfg) {
+        return std::make_unique<TraySetLocusStateActionNode>(nm, cfg, trays);
+      });
 }
 
 }  // namespace ek_challenger

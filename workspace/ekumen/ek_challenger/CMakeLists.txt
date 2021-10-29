@@ -62,17 +62,20 @@ include_directories(
 
 add_library(bt_challenger
   src/bt_challenger.cpp
+  src/ros_frame_transformer.cpp
+  src/tray_model_impl.cpp
+  src/collision_object_manager.cpp
   src/nodes/backtrack_action_node.cpp
   src/nodes/create_obstacle_action_node
   src/nodes/get_arm_joints_for_pose_action_node.cpp
   src/nodes/gripper_control_action_node.cpp
   src/nodes/head_control_action_node.cpp
   src/nodes/move_base_action_node.cpp
+  src/nodes/pause_action_node.cpp
   src/nodes/pick_and_place_action_node.cpp
+  src/tasks/pick_place_task.cpp
   src/nodes/set_arm_joints_pose_action_node.cpp
   src/nodes/torso_control_action_node.cpp
-  src/nodes/pause_action_node.cpp
-  src/tasks/pick_place_task.cpp
   )
 target_link_libraries(bt_challenger
   ${catkin_LIBRARIES}

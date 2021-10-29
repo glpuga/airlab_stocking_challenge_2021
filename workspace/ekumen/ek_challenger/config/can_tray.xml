@@ -1,0 +1,10 @@
+<root main_tree_to_execute="BehaviorTree">
+
+    <BehaviorTree ID="BehaviorTree">
+        <Sequence>
+            <TrayUpdatePlanningScene />
+            <Pause time_limit_sec="3"/>
+        </Sequence>
+    </BehaviorTree>
+
+</root>
