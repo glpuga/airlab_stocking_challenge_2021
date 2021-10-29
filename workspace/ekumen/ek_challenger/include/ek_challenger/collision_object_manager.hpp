@@ -39,5 +39,7 @@ class CollisionObjectManager {
   std::map<std::string, moveit_msgs::CollisionObject> known_objects_;
 
   std::vector<PlanningSceneManagerPtr> planning_scene_managers_;
+
+
 };
 }  // namespace ek_challenger

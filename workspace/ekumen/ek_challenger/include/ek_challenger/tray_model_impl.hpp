@@ -30,7 +30,7 @@ namespace ek_challenger {
 
 class TrayModelImpl : public TrayModelInterface {
  public:
-  TrayModelImpl(const geometry_msgs::PoseStamped &pose,
+  TrayModelImpl(const std::string &name, const geometry_msgs::PoseStamped &pose,
                 const std::vector<std::string> &moveit_namespaces);
 
   geometry_msgs::PoseStamped trayPose() const override;
@@ -69,6 +69,7 @@ class TrayModelImpl : public TrayModelInterface {
     geometry_msgs::PoseStamped base_link_pose{};
   };
 
+  const std::string name_;
   const std::string base_link_frame_{"base_link"};
   const int32_t max_allocation_attempts_{20};
 
@@ -87,6 +88,8 @@ class TrayModelImpl : public TrayModelInterface {
   ROSFrameTransformer frame_transformer_;
 
   std::map<std::string, LocusData> loci_;
+
+  ros::Publisher marker_pub_;
 
   void updateLocalPoses();
 
@@ -109,6 +112,8 @@ class TrayModelImpl : public TrayModelInterface {
 
   geometry_msgs::PoseStamped convertRelativeToAbsolute(
       const geometry_msgs::Pose2D &relative_pose) const;
+
+  void publishMarkers() const;
 };
 
 }  // namespace ek_challenger

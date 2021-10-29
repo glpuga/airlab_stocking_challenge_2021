@@ -1,0 +1,6 @@
+float64 volume_width
+float64 volume_height
+float64 volume_depth
+
+---
+geometry_msgs/PoseStamped[] tomato_cans_emtpy_loci

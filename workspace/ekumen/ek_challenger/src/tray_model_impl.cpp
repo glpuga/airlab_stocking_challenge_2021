@@ -19,13 +19,18 @@
 #include <ros/console.h>
 
 // project
+#include <ek_challenger/tomato_can_dimensions.hpp>
 #include <ek_challenger/tray_model_impl.hpp>
 
 namespace ek_challenger {
 
-TrayModelImpl::TrayModelImpl(const geometry_msgs::PoseStamped &pose,
+TrayModelImpl::TrayModelImpl(const std::string &name,
+                             const geometry_msgs::PoseStamped &pose,
                              const std::vector<std::string> &moveit_namespaces)
-    : pose_{pose}, collision_object_manager_{moveit_namespaces} {}
+    : name_{name}, pose_{pose}, collision_object_manager_{moveit_namespaces} {
+  marker_pub_ = ros::NodeHandle("~").advertise<visualization_msgs::Marker>(
+      "tomato_can_makers_" + name_, 10);
+}
 
 geometry_msgs::PoseStamped TrayModelImpl::trayPose() const { return pose_; }
 
@@ -311,6 +316,8 @@ void TrayModelImpl::updatePlanningScene() {
   updateSceneAddingCans();
   updateSceneAddingFrame(collision_object_manager_);
   collision_object_manager_.updatePlanningScene();
+
+  publishMarkers();
 }
 
 void TrayModelImpl::updateSceneAddingFrame(CollisionObjectManager &) {}
@@ -332,6 +339,42 @@ geometry_msgs::PoseStamped TrayModelImpl::convertRelativeToAbsolute(
   absolute_pose.pose.position.y += relative_pose.y;
   absolute_pose.pose.position.z += 0.5 * can_height_ + tray_to_can_distance_;
   return absolute_pose;
+}
+
+void TrayModelImpl::publishMarkers() const {
+  int32_t id_cnt{0};
+  visualization_msgs::Marker marker;
+  marker.action = visualization_msgs::Marker::DELETEALL;
+  marker_pub_.publish(marker);
+
+  for (const auto &locus : loci_) {
+    const auto &pose = convertRelativeToAbsolute(locus.second.relative_pose);
+    visualization_msgs::Marker marker;
+    marker.header.frame_id = pose.header.frame_id;
+    marker.header.stamp = ros::Time();
+    marker.ns = name_;
+    marker.id = ++id_cnt;
+    marker.type = visualization_msgs::Marker::CYLINDER;
+    marker.action = visualization_msgs::Marker::ADD;
+    marker.pose = pose.pose;
+    marker.scale.x = TomatoCanDimensions::width();
+    marker.scale.y = TomatoCanDimensions::depth();
+    marker.scale.z = TomatoCanDimensions::height();
+
+    if (locus.second.occupied) {
+      marker.color.a = 0.5;
+      marker.color.r = 1.0;
+      marker.color.g = 0.0;
+      marker.color.b = 0.0;
+    } else {
+      marker.color.a = 0.3;
+      marker.color.r = 0.0;
+      marker.color.g = 1.0;
+      marker.color.b = 0.0;
+    }
+
+    marker_pub_.publish(marker);
+  }
 }
 
 }  // namespace ek_challenger

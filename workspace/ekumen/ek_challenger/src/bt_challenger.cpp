@@ -141,7 +141,7 @@ void BehaviorTreeNode::registerNodes(BT::BehaviorTreeFactory &factory) {
   TrayData trays;
 
   trays["table"] = std::make_shared<TrayModelTable>(
-      make_pose_stamped("base_link", 0.6, 0.0, 0.70),
+      "table", make_pose_stamped("base_link", 0.6, 0.0, 0.70),
       std::vector<std::string>{"left", "right"});
   trays["table"]->addLocus(make_pose(0.1, 0.15), true, 0);
   trays["table"]->addLocus(make_pose(0.1, 0.05), true, 0);
@@ -153,7 +153,7 @@ void BehaviorTreeNode::registerNodes(BT::BehaviorTreeFactory &factory) {
   trays["table"]->addLocus(make_pose(-0.1, -0.15), true, 0);
 
   trays["backtray"] = std::make_shared<TrayModelTable>(
-      make_pose_stamped("torso_lift_link", 0.0, 0.0, 0.01),
+      "backtray", make_pose_stamped("torso_lift_link", 0.0, 0.0, 0.01),
       std::vector<std::string>{"left", "right"});
   trays["backtray"]->addLocus(make_pose(0.08, -0.1), false, 0);
   trays["backtray"]->addLocus(make_pose(0.08, 0.1), false, 0);
@@ -163,7 +163,7 @@ void BehaviorTreeNode::registerNodes(BT::BehaviorTreeFactory &factory) {
   trays["backtray"]->addLocus(make_pose(-0.12, 0.1), false, 0);
 
   trays["shelf"] = std::make_shared<TrayModelTable>(
-      make_pose_stamped("base_link", 0.5, 0.0, 1.00),
+      "shelf", make_pose_stamped("base_link", 0.5, 0.0, 1.00),
       std::vector<std::string>{"left", "right"});
   trays["table"]->addLocus(make_pose(0.1, 0.15), false, 0);
   trays["shelf"]->addLocus(make_pose(0.1, 0.05), false, 0);

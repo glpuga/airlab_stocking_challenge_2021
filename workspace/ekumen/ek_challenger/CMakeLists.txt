@@ -4,14 +4,17 @@ project(ek_challenger)
 add_compile_options(-std=c++14 -Wall -Wextra -Werror -Wno-error=shadow)
 
 find_package(catkin REQUIRED COMPONENTS
-  octomap_ros
   behaviortree_cpp_v3
+  cv_bridge
+  image_geometry
   message_generation
   moveit_ros_planning_interface
   moveit_task_constructor_core
+  octomap_ros
   roscpp
   rospy
   tf2
+  visualization_msgs
 )
 
 ##############
@@ -20,6 +23,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 add_service_files(
  FILES
+  ScanShelves.srv
   TaskConstructorPlan.srv
   TaskConstructorExec.srv
 )
@@ -36,15 +40,18 @@ generate_messages(
 catkin_package(
   INCLUDE_DIRS
     include
-# LIBRARIES ek_challenger
+  LIBRARIES bt_challenger
   CATKIN_DEPENDS
     behaviortree_cpp_v3
+    cv_bridge
+    image_geometry
     moveit_ros_planning_interface
     moveit_task_constructor_core
     octomap_ros
     roscpp
     rospy
     tf2
+    visualization_msgs
 # DEPENDS system_lib
 )
 
@@ -64,6 +71,7 @@ add_library(bt_challenger
   src/bt_challenger.cpp
   src/ros_frame_transformer.cpp
   src/tray_model_impl.cpp
+  src/tray_finder.cpp
   src/collision_object_manager.cpp
   src/nodes/backtrack_action_node.cpp
   src/nodes/create_obstacle_action_node
@@ -111,6 +119,18 @@ add_dependencies(task_constructor_node
   ${catkin_EXPORTED_TARGETS}
 )
 
+add_executable(shelf_scanner_node
+  src/shelf_scanner_node.cpp
+  src/shelf_scanner_node_runner.cpp
+)
+target_link_libraries(shelf_scanner_node
+  bt_challenger  
+  ${catkin_LIBRARIES}
+)
+add_dependencies(shelf_scanner_node
+  ${${PROJECT_NAME}_EXPORTED_TARGETS}
+  ${catkin_EXPORTED_TARGETS}
+)
 
 #############
 ## Install ##
