@@ -17,6 +17,9 @@ find_package(catkin REQUIRED COMPONENTS
   visualization_msgs
 )
 
+find_package(OpenCV)
+include_directories(${OpenCV_INCLUDE_DIRS})
+
 ##############
 ## Messages ##
 ##############
@@ -24,6 +27,7 @@ find_package(catkin REQUIRED COMPONENTS
 add_service_files(
  FILES
   ScanShelves.srv
+  ScanTable.srv
   TaskConstructorPlan.srv
   TaskConstructorExec.srv
 )
@@ -70,6 +74,7 @@ include_directories(
 add_library(bt_challenger
   src/bt_challenger.cpp
   src/ros_frame_transformer.cpp
+  src/table_scanner.cpp
   src/tray_model_impl.cpp
   src/tray_finder.cpp
   src/collision_object_manager.cpp
@@ -87,6 +92,7 @@ add_library(bt_challenger
   )
 target_link_libraries(bt_challenger
   ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
   fmt::fmt
 )
 add_dependencies(bt_challenger
@@ -131,6 +137,20 @@ add_dependencies(shelf_scanner_node
   ${${PROJECT_NAME}_EXPORTED_TARGETS}
   ${catkin_EXPORTED_TARGETS}
 )
+
+add_executable(table_scanner_node
+  src/table_scanner_node.cpp
+  src/table_scanner_node_runner.cpp
+)
+target_link_libraries(table_scanner_node
+  bt_challenger  
+  ${catkin_LIBRARIES}
+)
+add_dependencies(table_scanner_node
+  ${${PROJECT_NAME}_EXPORTED_TARGETS}
+  ${catkin_EXPORTED_TARGETS}
+)
+
 
 #############
 ## Install ##

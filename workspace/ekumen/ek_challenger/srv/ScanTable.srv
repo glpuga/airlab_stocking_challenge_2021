@@ -1,0 +1,14 @@
+int8 START_SCANNING=1
+int8 PROCESS_RESULTS=2
+
+int8 command
+
+# data for START_SCANNING command
+float64 table_distance
+float64 table_width
+float64 table_depth
+
+---
+
+# results, only valid when command is PROCESS_RESULTS
+geometry_msgs/PoseStamped[] tomato_can_poses
