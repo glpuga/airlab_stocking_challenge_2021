@@ -13,7 +13,7 @@
 // project
 #include <ek_challenger/ScanShelves.h>
 
-#include <ek_challenger/tray_finder.hpp>
+#include <ek_challenger/shelf_scanner.hpp>
 
 namespace ek_challenger {
 
@@ -45,8 +45,8 @@ class ShelfScannerNode {
 
   void cameraInfoCallback(const sensor_msgs::CameraInfo &msg);
 
-  void publishMarkerMessage(
-      const std::vector<geometry_msgs::PoseStamped> &tomato_cans_loci) const;
+  void publishMarkerMessage(const std::vector<geometry_msgs::PoseStamped>
+                                &tomato_can_stocking_target_poses) const;
 };
 
 }  // namespace ek_challenger

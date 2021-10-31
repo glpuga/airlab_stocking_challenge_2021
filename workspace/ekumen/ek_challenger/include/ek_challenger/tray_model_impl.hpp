@@ -35,6 +35,8 @@ class TrayModelImpl : public TrayModelInterface {
 
   geometry_msgs::PoseStamped trayPose() const override;
 
+  void clear() override;
+
   std::string addLocus(const geometry_msgs::PoseStamped &absolute_pose,
                        const bool occupied, const int32_t) override;
 
@@ -87,7 +89,7 @@ class TrayModelImpl : public TrayModelInterface {
 
   ROSFrameTransformer frame_transformer_;
 
-  std::map<std::string, LocusData> loci_;
+  std::map<std::string, LocusData> tomato_can_loci_;
 
   ros::Publisher marker_pub_;
 

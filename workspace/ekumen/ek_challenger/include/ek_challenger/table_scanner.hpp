@@ -17,7 +17,6 @@
 
 // project
 #include <ek_challenger/ros_frame_transformer.hpp>
-#include <ek_challenger/tray_finder.hpp>
 
 namespace ek_challenger {
 

@@ -17,13 +17,13 @@
 #include <sensor_msgs/image_encodings.h>
 
 // project
+#include <ek_challenger/shelf_scanner.hpp>
 #include <ek_challenger/tomato_can_dimensions.hpp>
-#include <ek_challenger/tray_finder.hpp>
 
 namespace ek_challenger {
 
-TrayFinder::TrayFinder(const double width, const double height,
-                       const double depth)
+ShelfScanner::ShelfScanner(const double width, const double height,
+                           const double depth)
     : cans_width_{static_cast<int32_t>(width / TomatoCanDimensions::width())},
       cans_height_{
           static_cast<int32_t>(height / TomatoCanDimensions::height())},
@@ -40,8 +40,8 @@ TrayFinder::TrayFinder(const double width, const double height,
   origin_pose_.orientation.w = 1.0;
 }
 
-bool TrayFinder::isWithinBuffer(const double x, const double y,
-                                const double z) const {
+bool ShelfScanner::isWithinBuffer(const double x, const double y,
+                                  const double z) const {
   return isWithinRange(origin_pose_.position.x, x,
                        origin_pose_.position.x + volumen_width_) &&
          isWithinRange(origin_pose_.position.y, y,
@@ -50,14 +50,13 @@ bool TrayFinder::isWithinBuffer(const double x, const double y,
                        origin_pose_.position.z + volumen_depth_);
 }
 
-bool TrayFinder::isWithinRange(const double a, const double x,
-                               const double b) const {
+bool ShelfScanner::isWithinRange(const double a, const double x,
+                                 const double b) const {
   return (a <= x) && (x <= b);
 }
 
-TrayFinder::BufferIndex TrayFinder::pointToBufferIndex(const double x,
-                                                       const double y,
-                                                       const double z) const {
+ShelfScanner::BufferIndex ShelfScanner::pointToBufferIndex(
+    const double x, const double y, const double z) const {
   BufferIndex index;
   index.u = static_cast<int32_t>(std::round(std::floor(
       (x - origin_pose_.position.x) / TomatoCanDimensions::width())));
@@ -68,7 +67,7 @@ TrayFinder::BufferIndex TrayFinder::pointToBufferIndex(const double x,
   return index;
 }
 
-geometry_msgs::Pose TrayFinder::bufferIndexToCenterPose(
+geometry_msgs::Pose ShelfScanner::bufferIndexToCenterPose(
     const BufferIndex &buffer_index) const {
   geometry_msgs::Pose pose;
   pose.position.x = buffer_index.u * TomatoCanDimensions::width() +
@@ -84,11 +83,11 @@ geometry_msgs::Pose TrayFinder::bufferIndexToCenterPose(
   return pose;
 }
 
-int32_t TrayFinder::bufferIndexToLinearIndex(const BufferIndex &index) const {
+int32_t ShelfScanner::bufferIndexToLinearIndex(const BufferIndex &index) const {
   return index.w * slice_stride_ + index.v * cans_width_ + index.u;
 }
 
-TrayFinder::BufferIndex TrayFinder::linearIndexToBufferIndex(
+ShelfScanner::BufferIndex ShelfScanner::linearIndexToBufferIndex(
     const int32_t &linear_index) const {
   BufferIndex buffer_index;
   buffer_index.w = linear_index / slice_stride_;
@@ -101,26 +100,28 @@ TrayFinder::BufferIndex TrayFinder::linearIndexToBufferIndex(
   return buffer_index;
 }
 
-bool TrayFinder::linearIndexIsWithinBuffer(const int32_t &linear_index) const {
+bool ShelfScanner::linearIndexIsWithinBuffer(
+    const int32_t &linear_index) const {
   return static_cast<size_t>(linear_index) < buffer_.size();
 }
 
-int32_t TrayFinder::linearIndexOfElementBelow(
+int32_t ShelfScanner::linearIndexOfElementBelow(
     const int32_t &linear_index) const {
   return linear_index + cans_width_;
 }
 
-int32_t TrayFinder::linearIndexOfElementAbove(
+int32_t ShelfScanner::linearIndexOfElementAbove(
     const int32_t &linear_index) const {
   return linear_index - cans_width_;
 }
 
-int32_t TrayFinder::linearIndexOfElementInFront(
+int32_t ShelfScanner::linearIndexOfElementInFront(
     const int32_t &linear_index) const {
   return linear_index - slice_stride_;
 }
 
-std::vector<geometry_msgs::PoseStamped> TrayFinder::findFreeTomatoCanPoses(
+std::vector<geometry_msgs::PoseStamped>
+ShelfScanner::scanShelvesForStockingTargetPoses(
     const sensor_msgs::Image &depth_image,
     const sensor_msgs::CameraInfo &camera_info) {
   // clean up the buffer
@@ -187,34 +188,40 @@ std::vector<geometry_msgs::PoseStamped> TrayFinder::findFreeTomatoCanPoses(
   // backup the current buffer
   const auto buffer_backup = buffer_;
 
-  auto count_tomato_cans_loci = [](const std::vector<CellContent> &buffer) {
-    int32_t tomato_cans_loci = 0;
-    auto counter_lambda = [&tomato_cans_loci](const CellContent &cell_value) {
-      tomato_cans_loci += (cell_value == CellContent::TomatoCan) ? 1 : 0;
-    };
-    std::for_each(buffer.begin(), buffer.end(), counter_lambda);
-    return tomato_cans_loci;
-  };
+  auto count_tomato_can_stocking_target_poses =
+      [](const std::vector<CellContent> &buffer) {
+        int32_t tomato_can_stocking_target_poses = 0;
+        auto counter_lambda =
+            [&tomato_can_stocking_target_poses](const CellContent &cell_value) {
+              tomato_can_stocking_target_poses +=
+                  (cell_value == CellContent::TomatoCan) ? 1 : 0;
+            };
+        std::for_each(buffer.begin(), buffer.end(), counter_lambda);
+        return tomato_can_stocking_target_poses;
+      };
 
   for (y_offset = 0.0; y_offset < TomatoCanDimensions::height();
        y_offset += delta) {
     ROS_ERROR_STREAM("Adjust " << y_offset);
     // count the number of cans
-    const auto tomato_cans_loci_count = count_tomato_cans_loci(buffer_);
-    ROS_ERROR_STREAM("N1 " << tomato_cans_loci_count);
+    const auto tomato_can_stocking_target_poses_count =
+        count_tomato_can_stocking_target_poses(buffer_);
+    ROS_ERROR_STREAM("N1 " << tomato_can_stocking_target_poses_count);
 
-    if (tomato_cans_loci_count < 1) {
+    if (tomato_can_stocking_target_poses_count < 1) {
       break;
     }
 
     // apply the depth image, with offset
     addDepthInformation(depth_image, camera_info, buffer_, y_offset + delta);
     // count the tomato cans again
-    const auto new_tomato_cans_loci_count = count_tomato_cans_loci(buffer_);
+    const auto new_tomato_can_stocking_target_poses_count =
+        count_tomato_can_stocking_target_poses(buffer_);
 
-    ROS_ERROR_STREAM("N2 " << new_tomato_cans_loci_count);
+    ROS_ERROR_STREAM("N2 " << new_tomato_can_stocking_target_poses_count);
     // if the number of tomato cans has decreased, then we hit the tray
-    if (tomato_cans_loci_count != new_tomato_cans_loci_count) {
+    if (tomato_can_stocking_target_poses_count !=
+        new_tomato_can_stocking_target_poses_count) {
       // keep the previous value of y_offset and restore the buffer
       break;
     }
@@ -223,7 +230,7 @@ std::vector<geometry_msgs::PoseStamped> TrayFinder::findFreeTomatoCanPoses(
   // restore the buffer
   buffer_ = std::move(buffer_backup);
 
-  std::vector<geometry_msgs::PoseStamped> tomato_cans_loci_loci;
+  std::vector<geometry_msgs::PoseStamped> tomato_can_stocking_target_poses;
   for (size_t linear_index = 0; linear_index < buffer_.size(); ++linear_index) {
     if (buffer_[linear_index] == CellContent::TomatoCan) {
       auto tomato_can_pose =
@@ -234,17 +241,17 @@ std::vector<geometry_msgs::PoseStamped> TrayFinder::findFreeTomatoCanPoses(
       tomato_can_stamped_pose.header.frame_id = depth_image.header.frame_id;
       tomato_can_stamped_pose.pose = tomato_can_pose;
 
-      tomato_cans_loci_loci.push_back(tomato_can_stamped_pose);
+      tomato_can_stocking_target_poses.push_back(tomato_can_stamped_pose);
     }
   }
 
-  return tomato_cans_loci_loci;
+  return tomato_can_stocking_target_poses;
 }
 
-void TrayFinder::addDepthInformation(const sensor_msgs::Image &depth_image,
-                                     const sensor_msgs::CameraInfo &camera_info,
-                                     std::vector<CellContent> &buffer,
-                                     const double y_offset) const {
+void ShelfScanner::addDepthInformation(
+    const sensor_msgs::Image &depth_image,
+    const sensor_msgs::CameraInfo &camera_info,
+    std::vector<CellContent> &buffer, const double y_offset) const {
   image_geometry::PinholeCameraModel model;
   model.fromCameraInfo(camera_info);
 

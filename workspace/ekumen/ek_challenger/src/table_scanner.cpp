@@ -145,7 +145,7 @@ std::vector<geometry_msgs::PoseStamped> TableScanner::processResult(
 
   // determine minimum enclosing circles for the contours, filter them and
   // create list of tomato cans!
-  std::vector<geometry_msgs::PoseStamped> tomato_can_poses;
+  std::vector<geometry_msgs::PoseStamped> detected_tomato_cans;
 
   for (size_t i = 0; i < contours.size(); i++) {
     cv::Point2f center;
@@ -172,13 +172,13 @@ std::vector<geometry_msgs::PoseStamped> TableScanner::processResult(
       pose.pose.position.z = z_threshold;
       pose.pose.orientation.w = 1;
 
-      tomato_can_poses.push_back(pose);
+      detected_tomato_cans.push_back(pose);
     }
   }
 
-  ROS_INFO_STREAM("Detection count after filtering: " << tomato_can_poses.size());
+  ROS_INFO_STREAM("Detection count after filtering: " << detected_tomato_cans.size());
 
-  return tomato_can_poses;
+  return detected_tomato_cans;
 }
 
 std::pair<int32_t, int32_t> TableScanner::convertXYtoUV(const double x,

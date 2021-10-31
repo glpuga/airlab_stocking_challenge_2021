@@ -10,4 +10,7 @@
     <remap from="/right/joint_states" to="/joint_states" />
   </node>
 
+  <node name="table_scanner_node" pkg="ek_challenger" type="table_scanner_node" respawn="true" output="screen" />
+  <node name="shelf_scanner_node" pkg="ek_challenger" type="shelf_scanner_node" respawn="true" output="screen" />
+
 </launch>

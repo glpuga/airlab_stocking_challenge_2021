@@ -34,6 +34,11 @@ TrayModelImpl::TrayModelImpl(const std::string &name,
 
 geometry_msgs::PoseStamped TrayModelImpl::trayPose() const { return pose_; }
 
+void TrayModelImpl::clear() {
+  std::lock_guard<std::mutex> l{mutex_};
+  tomato_can_loci_.clear();
+}
+
 std::string TrayModelImpl::addLocus(
     const geometry_msgs::PoseStamped &absolute_pose, const bool occupied,
     const int32_t) {
@@ -52,7 +57,7 @@ std::string TrayModelImpl::addLocus(
 
   locus_data.occupied = occupied;
 
-  loci_.emplace(std::make_pair(locus_id, locus_data));
+  tomato_can_loci_.emplace(std::make_pair(locus_id, locus_data));
   return locus_id;
 }
 
@@ -79,19 +84,19 @@ bool TrayModelImpl::pickOccupiedLocus(const Side &from_side,
 void TrayModelImpl::setLocusState(const std::string &locus_id,
                                   const bool occupied) {
   std::lock_guard<std::mutex> l{mutex_};
-  loci_.at(locus_id).in_use = false;
-  loci_.at(locus_id).occupied = occupied;
+  tomato_can_loci_.at(locus_id).in_use = false;
+  tomato_can_loci_.at(locus_id).occupied = occupied;
 }
 
 void TrayModelImpl::releaseLocus(const std::string &locus_id) {
   std::lock_guard<std::mutex> l{mutex_};
-  loci_.at(locus_id).in_use = false;
+  tomato_can_loci_.at(locus_id).in_use = false;
 }
 
 const geometry_msgs::PoseStamped TrayModelImpl::getLocusPose(
     const std::string &locus_id) const {
   std::lock_guard<std::mutex> l{mutex_};
-  const auto &locus = loci_.at(locus_id);
+  const auto &locus = tomato_can_loci_.at(locus_id);
   return convertRelativeToAbsolute(locus.relative_pose);
 }
 
@@ -101,7 +106,7 @@ std::string TrayModelImpl::getUniqueId() const {
 }
 
 void TrayModelImpl::updateLocalPoses() {
-  for (auto &pair : loci_) {
+  for (auto &pair : tomato_can_loci_) {
     auto &data = pair.second;
     data.base_link_pose = frame_transformer_.transformPoseToFrame(
         convertRelativeToAbsolute(data.relative_pose), base_link_frame_);
@@ -122,14 +127,14 @@ TrayModelImpl::findApproachDirectionForOccupiedLoci() {
 
   std::array<std::set<std::string>, 8> approach_direction_sets;
 
-  for (const auto &outer_pair : loci_) {
+  for (const auto &outer_pair : tomato_can_loci_) {
     const auto &outer_id = outer_pair.first;
     const auto &outer_pose = outer_pair.second.base_link_pose;
 
     std::array<bool, 8> bins;
     std::for_each(bins.begin(), bins.end(), [](bool &item) { item = true; });
 
-    for (const auto &inner_pair : loci_) {
+    for (const auto &inner_pair : tomato_can_loci_) {
       const auto &inner_id = inner_pair.first;
       const auto &inner_pose = inner_pair.second.base_link_pose;
 
@@ -172,14 +177,14 @@ TrayModelImpl::findApproachDirectionForEmptyLoci() {
 
   std::array<std::set<std::string>, 8> approach_direction_sets;
 
-  for (const auto &outer_pair : loci_) {
+  for (const auto &outer_pair : tomato_can_loci_) {
     const auto &outer_id = outer_pair.first;
     const auto &outer_pose = outer_pair.second.base_link_pose;
 
     std::array<bool, 8> bins;
     std::for_each(bins.begin(), bins.end(), [](bool &item) { item = true; });
 
-    for (const auto &inner_pair : loci_) {
+    for (const auto &inner_pair : tomato_can_loci_) {
       const auto &inner_id = inner_pair.first;
       const auto &inner_pose = inner_pair.second.base_link_pose;
 
@@ -236,11 +241,11 @@ bool TrayModelImpl::pickLocusWithGivenOccupiedState(const Side &from_side,
     if (id == "") {
       // there are no ids that fit the request
       return false;
-    } else if ((loci_[id].in_use == false) &&
-               (loci_[id].occupied == occupied)) {
+    } else if ((tomato_can_loci_[id].in_use == false) &&
+               (tomato_can_loci_[id].occupied == occupied)) {
       // we found one!
       locus_id = id;
-      loci_.at(locus_id).in_use = true;
+      tomato_can_loci_.at(locus_id).in_use = true;
       return true;
     }
 
@@ -259,7 +264,7 @@ bool TrayModelImpl::pickLocusWithGivenOccupiedStateByDepth(
 
   locus_id = "";
 
-  for (const auto &outer_pair : loci_) {
+  for (const auto &outer_pair : tomato_can_loci_) {
     const auto &outer_id = outer_pair.first;
 
     if (outer_pair.second.occupied == occupied) {
@@ -323,7 +328,7 @@ void TrayModelImpl::updatePlanningScene() {
 void TrayModelImpl::updateSceneAddingFrame(CollisionObjectManager &) {}
 
 void TrayModelImpl::updateSceneAddingCans() {
-  for (const auto &inner_pair : loci_) {
+  for (const auto &inner_pair : tomato_can_loci_) {
     const auto &id = inner_pair.first;
     const auto &pose =
         convertRelativeToAbsolute(inner_pair.second.relative_pose);
@@ -347,7 +352,7 @@ void TrayModelImpl::publishMarkers() const {
   marker.action = visualization_msgs::Marker::DELETEALL;
   marker_pub_.publish(marker);
 
-  for (const auto &locus : loci_) {
+  for (const auto &locus : tomato_can_loci_) {
     const auto &pose = convertRelativeToAbsolute(locus.second.relative_pose);
     visualization_msgs::Marker marker;
     marker.header.frame_id = pose.header.frame_id;

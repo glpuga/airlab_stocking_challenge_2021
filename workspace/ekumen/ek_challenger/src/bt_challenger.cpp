@@ -22,11 +22,15 @@
 #include <ek_challenger/nodes/move_base_action_node.hpp>
 #include <ek_challenger/nodes/pause_action_node.hpp>
 #include <ek_challenger/nodes/pick_and_place_action_node.hpp>
+#include <ek_challenger/nodes/scan_shelves_action_node.hpp>
+#include <ek_challenger/nodes/scan_table_get_results_action_node.hpp>
+#include <ek_challenger/nodes/scan_table_start_scanning_action_node.hpp>
 #include <ek_challenger/nodes/set_arm_joints_pose_action_node.hpp>
 #include <ek_challenger/nodes/torso_control_action_node.hpp>
 #include <ek_challenger/nodes/tray_pick_empty_locus_action_node.hpp>
 #include <ek_challenger/nodes/tray_pick_occupied_locus_action_node.hpp>
 #include <ek_challenger/nodes/tray_release_locus_action_node.hpp>
+#include <ek_challenger/nodes/tray_set_loci_action_node.hpp>
 #include <ek_challenger/nodes/tray_set_locus_state_action_node.hpp>
 #include <ek_challenger/nodes/tray_update_planning_scene_action_node.hpp>
 #include <ek_challenger/tray_data.hpp>
@@ -74,6 +78,12 @@ void BehaviorTreeNode::registerNodes(BT::BehaviorTreeFactory &factory) {
   factory.registerNodeType<TorsoControlActionNode>("TorsoControl");
   factory.registerNodeType<BacktrackActionNode>("Backtrack");
   factory.registerNodeType<CreateObstacleActionNode>("CreateObstacle");
+
+  factory.registerNodeType<ScanTableStartScanningActionNode>(
+      "ScanTableStartScanning");
+  factory.registerNodeType<ScanTableGetResultsActionNode>(
+      "ScanTableGetResults");
+  factory.registerNodeType<ScanShelvesActionNode>("ScanShelves");
 
   factory.registerBuilder<PickAndPlaceActionNode>(
       "PickAndPlaceLeft",
@@ -131,48 +141,54 @@ void BehaviorTreeNode::registerNodes(BT::BehaviorTreeFactory &factory) {
     return pose;
   };
 
-  auto make_pose = [](const double x, const double y) {
-    geometry_msgs::Pose2D pose;
-    pose.x = x;
-    pose.y = y;
-    return pose;
-  };
+  // auto make_pose = [](const double x, const double y) {
+  //   geometry_msgs::Pose2D pose;
+  //   pose.x = x;
+  //   pose.y = y;
+  //   return pose;
+  // };
 
   TrayData trays;
 
   trays["table"] = std::make_shared<TrayModelTable>(
       "table", make_pose_stamped("base_link", 0.6, 0.0, 0.70),
       std::vector<std::string>{"left", "right"});
-  trays["table"]->addLocus(make_pose(0.1, 0.15), true, 0);
-  trays["table"]->addLocus(make_pose(0.1, 0.05), true, 0);
-  trays["table"]->addLocus(make_pose(0.1, -0.05), true, 0);
-  trays["table"]->addLocus(make_pose(0.1, -0.15), true, 0);
-  trays["table"]->addLocus(make_pose(-0.1, 0.15), true, 0);
-  trays["table"]->addLocus(make_pose(-0.1, 0.05), true, 0);
-  trays["table"]->addLocus(make_pose(-0.1, -0.05), true, 0);
-  trays["table"]->addLocus(make_pose(-0.1, -0.15), true, 0);
+  // trays["table"]->addLocus(make_pose(0.1, 0.15), true, 0);
+  // trays["table"]->addLocus(make_pose(0.1, 0.05), true, 0);
+  // trays["table"]->addLocus(make_pose(0.1, -0.05), true, 0);
+  // trays["table"]->addLocus(make_pose(0.1, -0.15), true, 0);
+  // trays["table"]->addLocus(make_pose(-0.1, 0.15), true, 0);
+  // trays["table"]->addLocus(make_pose(-0.1, 0.05), true, 0);
+  // trays["table"]->addLocus(make_pose(-0.1, -0.05), true, 0);
+  // trays["table"]->addLocus(make_pose(-0.1, -0.15), true, 0);
 
   trays["backtray"] = std::make_shared<TrayModelTable>(
       "backtray", make_pose_stamped("torso_lift_link", 0.0, 0.0, 0.01),
       std::vector<std::string>{"left", "right"});
-  trays["backtray"]->addLocus(make_pose(0.08, -0.1), false, 0);
-  trays["backtray"]->addLocus(make_pose(0.08, 0.1), false, 0);
-  trays["backtray"]->addLocus(make_pose(-0.02, -0.1), false, 0);
-  trays["backtray"]->addLocus(make_pose(-0.02, 0.1), false, 0);
-  trays["backtray"]->addLocus(make_pose(-0.12, -0.1), false, 0);
-  trays["backtray"]->addLocus(make_pose(-0.12, 0.1), false, 0);
+  // trays["backtray"]->addLocus(make_pose(0.08, -0.1), false, 0);
+  // trays["backtray"]->addLocus(make_pose(0.08, 0.1), false, 0);
+  // trays["backtray"]->addLocus(make_pose(-0.02, -0.1), false, 0);
+  // trays["backtray"]->addLocus(make_pose(-0.02, 0.1), false, 0);
+  // trays["backtray"]->addLocus(make_pose(-0.12, -0.1), false, 0);
+  // trays["backtray"]->addLocus(make_pose(-0.12, 0.1), false, 0);
 
   trays["shelf"] = std::make_shared<TrayModelTable>(
       "shelf", make_pose_stamped("base_link", 0.5, 0.0, 1.00),
       std::vector<std::string>{"left", "right"});
-  trays["table"]->addLocus(make_pose(0.1, 0.15), false, 0);
-  trays["shelf"]->addLocus(make_pose(0.1, 0.05), false, 0);
-  trays["shelf"]->addLocus(make_pose(0.1, -0.05), false, 0);
-  trays["shelf"]->addLocus(make_pose(0.1, -0.15), false, 0);
-  trays["shelf"]->addLocus(make_pose(-0.1, 0.15), false, 0);
-  trays["shelf"]->addLocus(make_pose(-0.1, 0.05), false, 0);
-  trays["shelf"]->addLocus(make_pose(-0.1, -0.05), false, 0);
-  trays["shelf"]->addLocus(make_pose(-0.1, -0.15), false, 0);
+  // trays["table"]->addLocus(make_pose(0.1, 0.15), false, 0);
+  // trays["shelf"]->addLocus(make_pose(0.1, 0.05), false, 0);
+  // trays["shelf"]->addLocus(make_pose(0.1, -0.05), false, 0);
+  // trays["shelf"]->addLocus(make_pose(0.1, -0.15), false, 0);
+  // trays["shelf"]->addLocus(make_pose(-0.1, 0.15), false, 0);
+  // trays["shelf"]->addLocus(make_pose(-0.1, 0.05), false, 0);
+  // trays["shelf"]->addLocus(make_pose(-0.1, -0.05), false, 0);
+  // trays["shelf"]->addLocus(make_pose(-0.1, -0.15), false, 0);
+
+  factory.registerBuilder<TraySetLociActionNode>(
+      "TraySetLoci",
+      [=](const std::string &nm, const BT::NodeConfiguration &cfg) {
+        return std::make_unique<TraySetLociActionNode>(nm, cfg, trays);
+      });
 
   factory.registerBuilder<TrayUpdatePlanningSceneActionNode>(
       "TrayUpdatePlanningScene",

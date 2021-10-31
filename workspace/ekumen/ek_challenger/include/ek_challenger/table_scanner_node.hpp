@@ -61,8 +61,8 @@ class TableScannerNode {
 
   void cameraInfoCallback(const sensor_msgs::CameraInfo &msg);
 
-  void publishMarkerMessage(
-      const std::vector<geometry_msgs::PoseStamped> &tomato_cans_loci) const;
+  void publishMarkerMessage(const std::vector<geometry_msgs::PoseStamped>
+                                &detected_tomato_cans) const;
 };
 
 }  // namespace ek_challenger

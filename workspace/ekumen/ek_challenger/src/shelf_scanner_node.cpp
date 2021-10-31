@@ -19,7 +19,8 @@
 namespace ek_challenger {
 
 ShelfScannerNode::ShelfScannerNode() : pnh_{"~"} {
-  marker_pub_ = pnh_.advertise<visualization_msgs::Marker>("makers", 10);
+  marker_pub_ = pnh_.advertise<visualization_msgs::Marker>(
+      "tomato_can_stocking_target_poses", 10);
 
   depth_image_sub_ =
       pnh_.subscribe("/xtion/depth_registered/image_raw", 1,
@@ -28,9 +29,8 @@ ShelfScannerNode::ShelfScannerNode() : pnh_{"~"} {
       pnh_.subscribe("/xtion/depth_registered/camera_info", 1,
                      &ShelfScannerNode::cameraInfoCallback, this);
 
-  scan_shelf_srv_ =
-      pnh_.advertiseService("find_tomato_can_loci_in_shelf",
-                            &ShelfScannerNode::scanShelvesCallback, this);
+  scan_shelf_srv_ = pnh_.advertiseService(
+      "scan_shelves", &ShelfScannerNode::scanShelvesCallback, this);
 
   ROS_INFO_STREAM("Node started");
 }
@@ -43,22 +43,25 @@ bool ShelfScannerNode::run() {
 bool ShelfScannerNode::scanShelvesCallback(
     ek_challenger::ScanShelves::Request &req,
     ek_challenger::ScanShelves::Response &resp) {
-  TrayFinder tray_finder{req.volume_width, req.volume_height, req.volume_depth};
+  ShelfScanner tray_finder{req.volume_width, req.volume_height,
+                           req.volume_depth};
 
   ROS_INFO_STREAM("ScanShelves command received for volumen ("
                   << req.volume_width << " x " << req.volume_height << " x "
                   << req.volume_depth << ")");
 
-  ROS_INFO_STREAM("Waiting for image campling...");
+  ROS_INFO_STREAM("Scanning shelves for tomato can stocking target poses...");
 
-  auto tomato_cans_emtpy_loci = tray_finder.findFreeTomatoCanPoses(
-      depth_image_sample_, camera_info_sample_);
+  auto tomato_can_stocking_target_poses =
+      tray_finder.scanShelvesForStockingTargetPoses(depth_image_sample_,
+                                                    camera_info_sample_);
 
-  ROS_INFO_STREAM("Found " << tomato_cans_emtpy_loci.size() << " empty loci");
+  ROS_INFO_STREAM("Found " << tomato_can_stocking_target_poses.size()
+                           << "stocking target poses");
 
-  publishMarkerMessage(tomato_cans_emtpy_loci);
+  publishMarkerMessage(tomato_can_stocking_target_poses);
 
-  resp.tomato_cans_emtpy_loci = tomato_cans_emtpy_loci;
+  resp.tomato_can_stocking_target_poses = tomato_can_stocking_target_poses;
   return true;
 }
 
@@ -71,14 +74,14 @@ void ShelfScannerNode::cameraInfoCallback(const sensor_msgs::CameraInfo &msg) {
 }
 
 void ShelfScannerNode::publishMarkerMessage(
-    const std::vector<geometry_msgs::PoseStamped> &tomato_cans_emtpy_loci)
-    const {
-  if (!tomato_cans_emtpy_loci.size()) {
+    const std::vector<geometry_msgs::PoseStamped>
+        &tomato_can_stocking_target_poses) const {
+  if (!tomato_can_stocking_target_poses.size()) {
     return;
   }
 
   visualization_msgs::Marker marker;
-  marker.header.frame_id = tomato_cans_emtpy_loci[0].header.frame_id;
+  marker.header.frame_id = tomato_can_stocking_target_poses[0].header.frame_id;
   marker.header.stamp = ros::Time();
   marker.ns = "shelves_scanner_results";
   marker.id = 0;
@@ -99,7 +102,7 @@ void ShelfScannerNode::publishMarkerMessage(
   marker.color.g = 1.0;
   marker.color.b = 0.0;
 
-  for (const auto &locus : tomato_cans_emtpy_loci) {
+  for (const auto &locus : tomato_can_stocking_target_poses) {
     geometry_msgs::Point p;
     p.x = locus.pose.position.x;
     p.y = locus.pose.position.y;

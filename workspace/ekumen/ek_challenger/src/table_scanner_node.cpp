@@ -58,12 +58,12 @@ bool TableScannerNode::scanTableCallback(
     }
 
     sensor_msgs::Image detections;
-    auto tomato_can_poses = table_scanner_ptr_->processResult(detections);
+    auto detected_tomato_cans = table_scanner_ptr_->processResult(detections);
 
     detections_pub_.publish(detections);
 
-    resp.tomato_can_poses = tomato_can_poses;
-    publishMarkerMessage(tomato_can_poses);
+    resp.detected_tomato_cans = detected_tomato_cans;
+    publishMarkerMessage(detected_tomato_cans);
 
     // delete the instance of the scanner
     table_scanner_ptr_.reset();
@@ -101,13 +101,13 @@ void TableScannerNode::cameraInfoCallback(const sensor_msgs::CameraInfo &msg) {
 }
 
 void TableScannerNode::publishMarkerMessage(
-    const std::vector<geometry_msgs::PoseStamped> &tomato_can_poses) const {
-  if (!tomato_can_poses.size()) {
+    const std::vector<geometry_msgs::PoseStamped> &detected_tomato_cans) const {
+  if (!detected_tomato_cans.size()) {
     return;
   }
 
   visualization_msgs::Marker marker;
-  marker.header.frame_id = tomato_can_poses[0].header.frame_id;
+  marker.header.frame_id = detected_tomato_cans[0].header.frame_id;
   marker.header.stamp = ros::Time();
   marker.ns = "shelves_scanner_results";
   marker.id = 0;
@@ -128,7 +128,7 @@ void TableScannerNode::publishMarkerMessage(
   marker.color.g = 0.0;
   marker.color.b = 0.0;
 
-  for (const auto &locus : tomato_can_poses) {
+  for (const auto &locus : detected_tomato_cans) {
     geometry_msgs::Point p;
     p.x = locus.pose.position.x;
     p.y = locus.pose.position.y;

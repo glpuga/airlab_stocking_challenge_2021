@@ -11,4 +11,4 @@ float64 table_depth
 ---
 
 # results, only valid when command is PROCESS_RESULTS
-geometry_msgs/PoseStamped[] tomato_can_poses
+geometry_msgs/PoseStamped[] detected_tomato_cans

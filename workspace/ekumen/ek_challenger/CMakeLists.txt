@@ -74,9 +74,9 @@ include_directories(
 add_library(bt_challenger
   src/bt_challenger.cpp
   src/ros_frame_transformer.cpp
+  src/shelf_scanner.cpp
   src/table_scanner.cpp
   src/tray_model_impl.cpp
-  src/tray_finder.cpp
   src/collision_object_manager.cpp
   src/nodes/backtrack_action_node.cpp
   src/nodes/create_obstacle_action_node

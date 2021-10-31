@@ -19,11 +19,11 @@
 
 namespace ek_challenger {
 
-class TrayFinder {
+class ShelfScanner {
  public:
-  TrayFinder(const double width, const double height, const double depth);
+  ShelfScanner(const double width, const double height, const double depth);
 
-  std::vector<geometry_msgs::PoseStamped> findFreeTomatoCanPoses(
+  std::vector<geometry_msgs::PoseStamped> scanShelvesForStockingTargetPoses(
       const sensor_msgs::Image &depth_image,
       const sensor_msgs::CameraInfo &camera_info);
 

@@ -24,6 +24,8 @@ class TrayModelInterface {
 
   virtual geometry_msgs::PoseStamped trayPose() const = 0;
 
+  virtual void clear() = 0;
+
   virtual std::string addLocus(const geometry_msgs::PoseStamped &absolute_pose,
                                const bool occupied, const int32_t) = 0;
 
