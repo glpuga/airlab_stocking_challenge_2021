@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <mutex>
+#include <set>
 #include <string>
 
 // ros
@@ -30,16 +31,16 @@ class CollisionObjectManager {
   void addBox(const std::string &id, const geometry_msgs::PoseStamped &pose,
               const double width, const double height, const double depth);
 
-  void updatePlanningScene() const;
+  void updatePlanningScene(bool clear) const;
 
  private:
   using PlanningSceneManagerPtr =
       std::unique_ptr<moveit::planning_interface::PlanningSceneInterface>;
 
+  std::set<std::string> known_ids;
+
   std::map<std::string, moveit_msgs::CollisionObject> known_objects_;
 
   std::vector<PlanningSceneManagerPtr> planning_scene_managers_;
-
-
 };
 }  // namespace ek_challenger

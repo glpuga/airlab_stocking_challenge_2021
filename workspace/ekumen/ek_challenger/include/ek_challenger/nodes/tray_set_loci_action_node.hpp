@@ -35,7 +35,7 @@ class TraySetLociActionNode : public BT::AsyncActionNode {
     }
 
     std::vector<geometry_msgs::PoseStamped> locus_poses;
-    if (!getInput<std::vector<geometry_msgs::PoseStamped>>("locus_id",
+    if (!getInput<std::vector<geometry_msgs::PoseStamped>>("locus_poses",
                                                            locus_poses)) {
       throw BT::RuntimeError("missing required input [locus_poses]");
     }
@@ -46,6 +46,7 @@ class TraySetLociActionNode : public BT::AsyncActionNode {
     }
 
     trays_[tray_name]->clear();
+
     auto insert_in_tray = [&, this](const geometry_msgs::PoseStamped &pose) {
       trays_[tray_name]->addLocus(pose, occupied, 0);
     };

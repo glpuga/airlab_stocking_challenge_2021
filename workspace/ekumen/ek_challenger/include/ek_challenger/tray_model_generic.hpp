@@ -11,16 +11,12 @@
 
 namespace ek_challenger {
 
-class TrayModelTable : public TrayModelImpl {
+class TrayModelGeneric : public TrayModelImpl {
  public:
-  TrayModelTable(const std::string &name,
+  TrayModelGeneric(const std::string &name,
                  const geometry_msgs::PoseStamped &pose,
                  const std::vector<std::string> &moveit_namespaces)
       : TrayModelImpl(name, pose, moveit_namespaces) {}
-private:
-  void updateSceneAddingFrame(CollisionObjectManager &om) override {
-    om.addBox("table", trayPose(), 1.0, 1.0, 0.03);
-  }
 };
 
 }  // namespace ek_challenger

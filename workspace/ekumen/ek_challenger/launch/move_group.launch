@@ -28,7 +28,6 @@
       <arg name="pipeline" value="ompl" />
     </include>
 
-
     <!-- Trajectory Execution Functionality -->
     <arg name="file_suffix" value="$(eval ('no-arm-left' if not arm_left else end_effector_left + ('' if not ft_sensor_left else '_'+ft_sensor_left)) + '_' + ('no-arm-right' if not arm_right else end_effector_right + ('' if not ft_sensor_right else '_'+ft_sensor_right)))"/>
     <include ns="move_group" file="$(find tiago_dual_moveit_config)/launch/trajectory_execution.launch.xml">
@@ -36,6 +35,11 @@
       <arg name="moveit_controller_manager" value="tiago_dual" />
       <arg name="robot_sufix" value="$(arg file_suffix)" />
     </include>
+
+    <!-- Sensors Functionality -->
+    <!-- <include ns="move_group" file="$(find tiago_dual_moveit_config)/launch/sensor_manager.launch.xml" >
+      <arg name="moveit_sensor_manager" value="tiago_dual" />
+    </include> -->
 
     <!-- Start the actual move_group node/action server -->
     <node name="move_group" pkg="moveit_ros_move_group" type="move_group" respawn="false" output="screen">
@@ -95,8 +99,7 @@
 
     </node>
 
-    <node name="task_constructor_$(arg side)" pkg="ek_challenger" type="task_constructor_node"
-          respawn="true" output="screen">
+    <node name="task_constructor_$(arg side)" pkg="ek_challenger" type="task_constructor_node" respawn="true" output="screen">
       <remap from="/$(arg side)/joint_states" to="/joint_states" />
     </node>
 

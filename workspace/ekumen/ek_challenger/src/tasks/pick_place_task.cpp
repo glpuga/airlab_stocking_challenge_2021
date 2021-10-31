@@ -50,8 +50,8 @@ PickPlaceTask::PickPlaceTask(const std::string &side) {
       {fmt::format("gripper_{}_right_finger_joint", side), 0.044}};
 
   closed_hand_joint_values_ = {
-      {fmt::format("gripper_{}_left_finger_joint", side), 0.01},
-      {fmt::format("gripper_{}_right_finger_joint", side), 0.01}};
+      {fmt::format("gripper_{}_left_finger_joint", side), 0.025},
+      {fmt::format("gripper_{}_right_finger_joint", side), 0.025}};
 
   auto to_rad = [](const double deg) { return 3.14159 * deg / 180.0; };
 
@@ -66,16 +66,27 @@ PickPlaceTask::PickPlaceTask(const std::string &side) {
   //     {fmt::format("arm_{}_6_joint", side), to_rad(30)},
   //     {fmt::format("arm_{}_7_joint", side), to_rad(0)}};
 
-  // Uptray pose:
-  //
+  // Uptray pose :
+
   resting_arm_joint_poses_ = {
-      {fmt::format("arm_{}_1_joint", side), to_rad(-30)},
-      {fmt::format("arm_{}_2_joint", side), to_rad(-30)},
+      {fmt::format("arm_{}_1_joint", side), to_rad(60)},
+      {fmt::format("arm_{}_2_joint", side), to_rad(0)},
       {fmt::format("arm_{}_3_joint", side), to_rad(0)},
       {fmt::format("arm_{}_4_joint", side), to_rad(90)},
       {fmt::format("arm_{}_5_joint", side), to_rad(120)},
       {fmt::format("arm_{}_6_joint", side), to_rad(-60)},
       {fmt::format("arm_{}_7_joint", side), to_rad(-15)}};
+
+  // Uptray pose:
+  //
+  // resting_arm_joint_poses_ = {
+  //     {fmt::format("arm_{}_1_joint", side), to_rad(60)},
+  //     {fmt::format("arm_{}_2_joint", side), to_rad(-30)},
+  //     {fmt::format("arm_{}_3_joint", side), to_rad(60)},
+  //     {fmt::format("arm_{}_4_joint", side), to_rad(30)},
+  //     {fmt::format("arm_{}_5_joint", side), to_rad(-100)},
+  //     {fmt::format("arm_{}_6_joint", side), to_rad(0)},
+  //     {fmt::format("arm_{}_7_joint", side), to_rad(0)}};
 
   grasp_frame_transform_.header.frame_id = hand_frame_;
   grasp_frame_transform_.pose.position.x = 0.07;
@@ -84,7 +95,7 @@ PickPlaceTask::PickPlaceTask(const std::string &side) {
 
   {
     tf2::Quaternion q;
-    q.setRPY(to_rad(0.0), to_rad(0.0), to_rad(0.0));
+    q.setRPY(to_rad(0.0), to_rad(-10.0), to_rad(0.0));
     grasp_frame_transform_.pose.orientation.x = q.x();
     grasp_frame_transform_.pose.orientation.y = q.y();
     grasp_frame_transform_.pose.orientation.z = q.z();
@@ -203,6 +214,7 @@ bool PickPlaceTask::build(const std::string &object_name,
       geometry_msgs::Vector3Stamped direction_vector;
       direction_vector.header.frame_id = hand_frame_;
       direction_vector.vector.x = 1.0;
+      direction_vector.vector.z = -1.0;
       stage->setDirection(direction_vector);
 
       grasp->insert(std::move(stage));
@@ -266,13 +278,13 @@ bool PickPlaceTask::build(const std::string &object_name,
       grasp->insert(std::move(stage));
     }
 
-    // /* Allow collision (object <-> support) */
-    // {
-    //   auto stage = std::make_unique<stages::ModifyPlanningScene>(
-    //       "allow collision (object_name,support)");
-    //   stage->allowCollisions({object_name}, support_surfaces_, true);
-    //   grasp->insert(std::move(stage));
-    // }
+    /* Allow collision (object <-> support) */
+    {
+      auto stage = std::make_unique<stages::ModifyPlanningScene>(
+          "allow collision (object_name,support)");
+      stage->allowCollisions({object_name}, support_surfaces_, true);
+      grasp->insert(std::move(stage));
+    }
 
     /* Lift object */
 
@@ -293,13 +305,13 @@ bool PickPlaceTask::build(const std::string &object_name,
       grasp->insert(std::move(stage));
     }
 
-    // /* Forbid collision (object <-> support) */
-    // {
-    //   auto stage = std::make_unique<stages::ModifyPlanningScene>(
-    //       "forbid collision (object_name,surface)");
-    //   stage->allowCollisions({object_name}, support_surfaces_,
-    //   false); grasp->insert(std::move(stage));
-    // }
+    /* Forbid collision (object <-> support) */
+    {
+      auto stage = std::make_unique<stages::ModifyPlanningScene>(
+          "forbid collision (object_name,surface)");
+      stage->allowCollisions({object_name}, support_surfaces_, false);
+      grasp->insert(std::move(stage));
+    }
 
     // Add grasp container to task
     task_->add(std::move(grasp));
@@ -333,7 +345,7 @@ bool PickPlaceTask::build(const std::string &object_name,
       stage->properties().set("marker_ns", "lower_object");
       stage->properties().set("link", hand_frame_);
       stage->properties().configureInitFrom(Stage::PARENT, {"group"});
-      stage->setMinMaxDistance(lift_object_min_dist_, lift_object_max_dist_);
+      stage->setMinMaxDistance(0.01, lift_object_max_dist_);
 
       // Set downward direction
       geometry_msgs::Vector3Stamped vec;

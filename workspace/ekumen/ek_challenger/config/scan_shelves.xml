@@ -11,6 +11,7 @@
                     <ScanShelves tomato_can_stocking_target_poses="{tomato_can_stocking_target_poses}" />
                 </Sequence>
                 <Pause time_limit_sec="2"/>
+                <ClearShelfObstacles />
             </Sequence>
         </Repeat>
     </BehaviorTree>

@@ -36,6 +36,11 @@ geometry_msgs::PoseStamped TrayModelImpl::trayPose() const { return pose_; }
 
 void TrayModelImpl::clear() {
   std::lock_guard<std::mutex> l{mutex_};
+  for (auto &pair : tomato_can_loci_) {
+    pair.second.occupied = false;
+  }
+  updatePlanningScene();
+
   tomato_can_loci_.clear();
 }
 
@@ -50,10 +55,12 @@ std::string TrayModelImpl::addLocus(
   LocusData locus_data;
   locus_data.locus_id = locus_id;
 
-  locus_data.relative_pose.x =
+  locus_data.relative_pose.position.x =
       same_frame_pose.pose.position.x - pose_.pose.position.x;
-  locus_data.relative_pose.y =
+  locus_data.relative_pose.position.y =
       same_frame_pose.pose.position.y - pose_.pose.position.y;
+  locus_data.relative_pose.position.z =
+      same_frame_pose.pose.position.z - pose_.pose.position.z;
 
   locus_data.occupied = occupied;
 
@@ -64,7 +71,11 @@ std::string TrayModelImpl::addLocus(
 std::string TrayModelImpl::addLocus(const geometry_msgs::Pose2D &relative_pose,
                                     const bool occupied,
                                     const int32_t priority) {
-  return addLocus(convertRelativeToAbsolute(relative_pose), occupied, priority);
+  geometry_msgs::Pose local_pose;
+  local_pose.position.x = relative_pose.x;
+  local_pose.position.y = relative_pose.y;
+  local_pose.position.z = can_height_ * 0.5 + tray_to_can_distance_;
+  return addLocus(convertRelativeToAbsolute(local_pose), occupied, priority);
 }
 
 bool TrayModelImpl::pickEmptyLocus(const Side &from_side,
@@ -78,6 +89,7 @@ bool TrayModelImpl::pickOccupiedLocus(const Side &from_side,
                                       std::string &locus_id) {
   std::lock_guard<std::mutex> l{mutex_};
   (void)from_side;
+  // return pickLocusWithGivenOccupiedState(from_side, locus_id, true);
   return pickLocusWithGivenOccupiedStateByDepth(locus_id, true, false);
 }
 
@@ -229,9 +241,9 @@ bool TrayModelImpl::pickLocusWithGivenOccupiedState(const Side &from_side,
   std::string id;
   for (int32_t attempt = 0; attempt < max_allocation_attempts_; ++attempt) {
     if ((from_side == Side::LEFT) && occupied) {
-      id = pickARandomObjectIdFromBins({1, 2, 3}, approach_sets);
+      id = pickARandomObjectIdFromBins({2, 3, 4}, approach_sets);
     } else if ((from_side == Side::RIGHT) && occupied) {
-      id = pickARandomObjectIdFromBins({4, 5, 6}, approach_sets);
+      id = pickARandomObjectIdFromBins({3, 4, 5}, approach_sets);
     } else if ((from_side == Side::LEFT) && !occupied) {
       id = pickARandomObjectIdFromBins({0, 7, 6}, approach_sets);
     } else if ((from_side == Side::RIGHT) && !occupied) {
@@ -269,14 +281,14 @@ bool TrayModelImpl::pickLocusWithGivenOccupiedStateByDepth(
 
     if (outer_pair.second.occupied == occupied) {
       if (get_max) {
-        if (current_x_value < outer_pair.second.relative_pose.x) {
+        if (current_x_value < outer_pair.second.relative_pose.position.x) {
           locus_id = outer_id;
-          current_x_value = outer_pair.second.relative_pose.x;
+          current_x_value = outer_pair.second.relative_pose.position.x;
         }
       } else {
-        if (current_x_value > outer_pair.second.relative_pose.x) {
+        if (current_x_value > outer_pair.second.relative_pose.position.x) {
           locus_id = outer_id;
-          current_x_value = outer_pair.second.relative_pose.x;
+          current_x_value = outer_pair.second.relative_pose.position.x;
         }
       }
     }
@@ -286,6 +298,8 @@ bool TrayModelImpl::pickLocusWithGivenOccupiedStateByDepth(
   if (locus_id == "") {
     return false;
   }
+
+  tomato_can_loci_.at(locus_id).in_use = true;
 
   return true;
 }
@@ -320,7 +334,7 @@ std::string TrayModelImpl::pickARandomObjectIdFromBins(
 void TrayModelImpl::updatePlanningScene() {
   updateSceneAddingCans();
   updateSceneAddingFrame(collision_object_manager_);
-  collision_object_manager_.updatePlanningScene();
+  collision_object_manager_.updatePlanningScene(false);
 
   publishMarkers();
 }
@@ -338,11 +352,11 @@ void TrayModelImpl::updateSceneAddingCans() {
 }
 
 geometry_msgs::PoseStamped TrayModelImpl::convertRelativeToAbsolute(
-    const geometry_msgs::Pose2D &relative_pose) const {
+    const geometry_msgs::Pose &relative_pose) const {
   auto absolute_pose = pose_;
-  absolute_pose.pose.position.x += relative_pose.x;
-  absolute_pose.pose.position.y += relative_pose.y;
-  absolute_pose.pose.position.z += 0.5 * can_height_ + tray_to_can_distance_;
+  absolute_pose.pose.position.x += relative_pose.position.x;
+  absolute_pose.pose.position.y += relative_pose.position.y;
+  absolute_pose.pose.position.z += relative_pose.position.z;
   return absolute_pose;
 }
 
@@ -364,7 +378,6 @@ void TrayModelImpl::publishMarkers() const {
     marker.pose = pose.pose;
     marker.scale.x = TomatoCanDimensions::width();
     marker.scale.y = TomatoCanDimensions::depth();
-    marker.scale.z = TomatoCanDimensions::height();
 
     if (locus.second.occupied) {
       marker.color.a = 0.5;
@@ -376,6 +389,13 @@ void TrayModelImpl::publishMarkers() const {
       marker.color.r = 0.0;
       marker.color.g = 1.0;
       marker.color.b = 0.0;
+    }
+
+    if (locus.second.in_use) {
+      marker.scale.z = TomatoCanDimensions::height() * 2;
+      marker.color.a = 0.9;
+    } else {
+      marker.scale.z = TomatoCanDimensions::height();
     }
 
     marker_pub_.publish(marker);

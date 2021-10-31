@@ -83,11 +83,17 @@ void CollisionObjectManager::addBox(const std::string &id,
   known_objects_[id] = collision_object;
 }
 
-void CollisionObjectManager::updatePlanningScene() const {
+void CollisionObjectManager::updatePlanningScene(bool clear) const {
   std::vector<moveit_msgs::CollisionObject> collision_objects;
 
   for (const auto &item : known_objects_) {
     collision_objects.push_back(item.second);
+  }
+
+  if (clear) {
+    for (auto &item : collision_objects) {
+      item.operation = moveit_msgs::CollisionObject::REMOVE;
+    }
   }
 
   for (const auto &planning_scene_manager : planning_scene_managers_) {

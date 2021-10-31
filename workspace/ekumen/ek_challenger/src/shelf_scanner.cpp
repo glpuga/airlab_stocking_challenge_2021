@@ -10,6 +10,7 @@
 
 // third party
 #include <cv_bridge/cv_bridge.h>
+#include <fmt/format.h>
 #include <image_geometry/pinhole_camera_model.h>
 #include <ros/console.h>
 #include <sensor_msgs/CameraInfo.h>
@@ -227,7 +228,7 @@ ShelfScanner::scanShelvesForStockingTargetPoses(
     }
   }
 
-  // restore the buffer
+  // Add obstacles
   buffer_ = std::move(buffer_backup);
 
   std::vector<geometry_msgs::PoseStamped> tomato_can_stocking_target_poses;
@@ -242,8 +243,27 @@ ShelfScanner::scanShelvesForStockingTargetPoses(
       tomato_can_stamped_pose.pose = tomato_can_pose;
 
       tomato_can_stocking_target_poses.push_back(tomato_can_stamped_pose);
+    } else {
+      if (buffer_[linear_index] == CellContent::Obstacle) {
+        auto obstacle_pose =
+            bufferIndexToCenterPose(linearIndexToBufferIndex(linear_index));
+        obstacle_pose.position.y += y_offset;
+
+        geometry_msgs::PoseStamped obstacle_stamped_pose;
+        obstacle_stamped_pose.header.frame_id = depth_image.header.frame_id;
+        obstacle_stamped_pose.pose = obstacle_pose;
+
+
+        const double f = 0.7;
+        collision_object_manager_.addBox(
+            fmt::format("{}", linear_index), obstacle_stamped_pose,
+            f *TomatoCanDimensions::width(), f*TomatoCanDimensions::height(),
+            f *TomatoCanDimensions::depth());
+      }
     }
   }
+
+  collision_object_manager_.updatePlanningScene(false);
 
   return tomato_can_stocking_target_poses;
 }
@@ -310,6 +330,16 @@ void ShelfScanner::addDepthInformation(
       }
     }
   }
+}
+
+void ShelfScanner::clearObstacles() {
+  for (int32_t i = 0; i < 30000; ++i) {
+    collision_object_manager_.addBox(
+        fmt::format("{}", i), geometry_msgs::PoseStamped{},
+        TomatoCanDimensions::width(), TomatoCanDimensions::height(),
+        TomatoCanDimensions::depth());
+  }
+  collision_object_manager_.updatePlanningScene(true);
 }
 
 }  // namespace ek_challenger

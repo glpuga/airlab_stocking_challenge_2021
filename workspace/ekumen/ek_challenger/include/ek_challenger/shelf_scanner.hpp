@@ -15,6 +15,7 @@
 #include <sensor_msgs/Image.h>
 
 // project
+#include <ek_challenger/collision_object_manager.hpp>
 #include <ek_challenger/tomato_can_dimensions.hpp>
 
 namespace ek_challenger {
@@ -26,6 +27,8 @@ class ShelfScanner {
   std::vector<geometry_msgs::PoseStamped> scanShelvesForStockingTargetPoses(
       const sensor_msgs::Image &depth_image,
       const sensor_msgs::CameraInfo &camera_info);
+
+  void clearObstacles();
 
  private:
   enum class CellContent {
@@ -55,6 +58,8 @@ class ShelfScanner {
   const int32_t slice_stride_;
 
   std::vector<CellContent> buffer_;
+
+  CollisionObjectManager collision_object_manager_{{"left", "right"}};
 
   bool isWithinBuffer(const double x, const double y, const double z) const;
 

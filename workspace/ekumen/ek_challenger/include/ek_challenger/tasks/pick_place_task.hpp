@@ -52,8 +52,8 @@ class PickPlaceTask {
 
   const double approach_object_min_dist_{0.15};
   const double approach_object_max_dist_{0.25};
-  const double lift_object_min_dist_{0.01};
-  const double lift_object_max_dist_{0.10};
+  const double lift_object_min_dist_{0.12};
+  const double lift_object_max_dist_{0.20};
 
   const double connect_planning_timeout_{25};
 
@@ -61,6 +61,8 @@ class PickPlaceTask {
   std::string hand_group_name_;
   std::string hand_frame_;
   std::string eef_name_;
+
+  std::vector<std::string> support_surfaces_{"table"};
 
   geometry_msgs::PoseStamped grasp_frame_transform_;
 
