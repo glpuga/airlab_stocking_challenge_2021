@@ -92,21 +92,23 @@ PickPlaceTask::PickPlaceTask(const std::string &side) {
   grasp_frame_transform_.pose.position.x = 0.07;
   grasp_frame_transform_.pose.position.y = 0.0;
   grasp_frame_transform_.pose.position.z = 0.0;
+}
+
+bool PickPlaceTask::build(const std::string &object_name,
+                          const geometry_msgs::PoseStamped &target_pose,
+                          const bool move_to_home, const bool mode2) {
+  ROS_INFO("Initializing task pipeline");
 
   {
+    auto to_rad = [](const double deg) { return 3.14159 * deg / 180.0; };
+
     tf2::Quaternion q;
-    q.setRPY(to_rad(0.0), to_rad(-10.0), to_rad(0.0));
+    q.setRPY(to_rad(0.0), to_rad(mode2 ? 0 : -10.0), to_rad(0.0));
     grasp_frame_transform_.pose.orientation.x = q.x();
     grasp_frame_transform_.pose.orientation.y = q.y();
     grasp_frame_transform_.pose.orientation.z = q.z();
     grasp_frame_transform_.pose.orientation.w = q.w();
   }
-}
-
-bool PickPlaceTask::build(const std::string &object_name,
-                          const geometry_msgs::PoseStamped &target_pose,
-                          const bool move_to_home) {
-  ROS_INFO("Initializing task pipeline");
 
   task_.reset();
   task_.reset(new moveit::task_constructor::Task());
@@ -214,7 +216,7 @@ bool PickPlaceTask::build(const std::string &object_name,
       geometry_msgs::Vector3Stamped direction_vector;
       direction_vector.header.frame_id = hand_frame_;
       direction_vector.vector.x = 1.0;
-      direction_vector.vector.z = -1.0;
+      direction_vector.vector.z = mode2 ? 0.0 : -1.0;
       stage->setDirection(direction_vector);
 
       grasp->insert(std::move(stage));
@@ -350,7 +352,13 @@ bool PickPlaceTask::build(const std::string &object_name,
       // Set downward direction
       geometry_msgs::Vector3Stamped vec;
       vec.header.frame_id = world_frame_;
-      vec.vector.z = -1.0;
+
+      if (mode2) {
+        vec.vector.x = 1.0;
+      } else {
+        vec.vector.z = -1.0;
+      }
+
       stage->setDirection(vec);
       place->insert(std::move(stage));
     }

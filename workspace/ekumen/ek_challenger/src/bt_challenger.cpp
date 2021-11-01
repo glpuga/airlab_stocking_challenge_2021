@@ -171,10 +171,10 @@ void BehaviorTreeNode::registerNodes(BT::BehaviorTreeFactory &factory) {
       std::vector<std::string>{"left", "right"});
   // trays["backtray"]->addLocus(make_pose(0.08, -0.1), false, 0);
   // trays["backtray"]->addLocus(make_pose(0.08, 0.1), false, 0);
-  // trays["backtray"]->addLocus(make_pose(0.02, -0.1), false, 0);
-  // trays["backtray"]->addLocus(make_pose(0.02, 0.1), false, 0);
-  trays["backtray"]->addLocus(make_pose(-0.12, -0.1), false, 0);
-  trays["backtray"]->addLocus(make_pose(-0.12, 0.1), false, 0);
+  trays["backtray"]->addLocus(make_pose(0.04, -0.1), false, 0);
+  trays["backtray"]->addLocus(make_pose(0.04, 0.1), false, 0);
+  trays["backtray"]->addLocus(make_pose(-0.10, -0.1), false, 0);
+  trays["backtray"]->addLocus(make_pose(-0.10, 0.1), false, 0);
 
   trays["shelf"] = std::make_shared<TrayModelGeneric>(
       "shelf", make_pose_stamped("base_link", 0.5, 0.0, 1.00),

@@ -101,8 +101,9 @@
 
     <BehaviorTree ID="ScanShelves">
         <Sequence>
-            <TorsoControl relative_height="0.0" />
+            <TorsoControl relative_height="0.05" />
             <HeadControl pitch="0.0" yaw="90.0" />
+            <Pause time_limit_sec="2"/>
             <ScanShelves tomato_can_stocking_target_poses="{tomato_can_stocking_target_poses}" />
             <TraySetLoci tray_name="shelf" locus_poses="{tomato_can_stocking_target_poses}" occupied="false" />
         </Sequence>
@@ -126,20 +127,15 @@
 
     <BehaviorTree ID="GoToTable">
         <Sequence>
-            <!-- <MoveBase goal="1.0;-1.0;0"/> -->
-            <!-- <Backtrack target_distance_m="0.4"/> -->
-            <MoveBase goal="1.0;-1.5;0.0"/>
-            <!-- front -->
-            <MoveBase goal="2.0;-0.5;0.3"/>
-            <!-- front -->
-            <!-- <MoveBase goal="3;-0.7;1.57"/> -->
+            <MoveBase goal="1.0;-0.5;0.0"/>
+            <MoveBase goal="2.2;-0.5;0.3"/>
         </Sequence>
     </BehaviorTree>
 
     <BehaviorTree ID="GoToShelves">
         <Sequence>
-            <MoveBase goal="2.0;-1.5;1.57"/>
-            <MoveBase goal="2.0;-0.1;1.57"/>
+            <MoveBase goal="2.2 ;-1.0;1.57"/>
+            <MoveBase goal="2.1;-0.2;1.5"/>
         </Sequence>
     </BehaviorTree>
 
@@ -147,20 +143,21 @@
     <BehaviorTree ID="FillTheShelf">
         <Sequence>
             <ClearShelfObstacles />
-            <SubTree ID="GetInUpTrayPose" />
+            <SubTree ID="GetInRestPose" />
             <SubTree ID="GoToShelves" />
             <SubTree ID="ScanShelves" />
-            <!-- <SubTree ID="UpdateOctomap" /> -->
             <TrayUpdatePlanningScene />
-            <SetBlackboard output_key="src_tray" value="backtray" />
+            <!-- <SubTree ID="UpdateOctomap" /> -->
+            <!-- <SetBlackboard output_key="src_tray" value="backtray" />
             <SetBlackboard output_key="dst_tray" value="shelf" />
-            <SubTree ID="MoveTomatoCans" src_tray="src_tray" dst_tray="dst_tray" />
+            <SubTree ID="MoveTomatoCans" src_tray="src_tray" dst_tray="dst_tray" /> -->
+            <Pause time_limit_sec="300"/>
             <Backtrack target_distance_m="1.0"/>
         </Sequence>
     </BehaviorTree>
 
     <BehaviorTree ID="MoveTomatoCans">
-        <Repeat num_cycles="4">
+        <Repeat num_cycles="10">
             <ForceSuccess>
                 <KeepRunningUntilFailure>
                     <Fallback>
@@ -233,4 +230,3 @@
     </BehaviorTree>
 
 </root>
-

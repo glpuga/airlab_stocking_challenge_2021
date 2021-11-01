@@ -28,7 +28,7 @@ class ScanTableStartScanningActionNode : public BT::AsyncActionNode {
     {
       ek_challenger::ScanTable srv;
       srv.request.table_distance = 0.2;
-      srv.request.table_width = 1.0;
+      srv.request.table_width = 1.4;
       srv.request.table_depth = 1.5;
 
       srv.request.command = srv.request.START_SCANNING;
