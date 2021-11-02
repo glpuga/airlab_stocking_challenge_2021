@@ -36,7 +36,7 @@ Our current state, on the moment of the deadline, is that we can pick-up the can
 
 We barely managed to start integration of all the software pieces the day before the deadline, so all of this kind-of works... most of the time. Well, maybe not most, but works sometimes.
 
-Which gets us to the reason we were unable to complete the challenge: **Unfortunately we could not figure why moveit refuses to pick the cans from the tray of the robot and place them within the shelve at the designated spots, and this prevents us from completing the challenge completely.** Most likely we need some more tuning of MoveIt, but we could not solve it in time for the deadline.
+Which gets us to the reason we were unable to complete the challenge: **Unfortunately we could not figure why moveit refuses to pick the cans from the tray of the robot and place them within the shelf at the designated spots, and this prevents us from completing the challenge sucessfully.** Most likely we need some more tuning of MoveIt, but we could not solve it in time for the deadline.
 
 ## Tools used
 
@@ -67,11 +67,16 @@ That will launch the competition simulation. Then open a second terminal and do:
 
 Our solution to the challenge will begin running, hopefully similarly to what can be seen in the video.
 
+## Where's the code?
+
+The code can be found within the `workspace/ekumen/` folder in this repository. except for a few early tools and scripts, all of it is within the `ek_challenger` package in that folder.
+
 ## Will it run in the actual robot?
 
 Most definitely not. The location of the table and the shelves is hardcoded in the behavior tree. This is trivial to change, but given that the stacking step of the algorithm does not work it's unnecessary to try. Also, we did not get to finely tune obstacle detection using moveit/octomap.
 
 Busy as we were getting to the deadline, I'm afraid we did not prepare a ready-to-run docker with the software already built to run on the robot.
+
 
 
 
