@@ -3,15 +3,16 @@
     <BehaviorTree ID="BehaviorTree">
         <Repeat num_cycles="-1">
             <Sequence>
-                <MoveBase goal="1.4;0;0"/>
-                <MoveBase goal="2.0;-0.4;1.57"/>
+                <!-- <MoveBase goal="1;-2;0"/>
+                <MoveBase goal="3;-2;0"/> -->
+                <MoveBase goal="4.0;0.0;3.14"/>
                 <Sequence>
                     <TorsoControl relative_height="0.0" />
                     <HeadControl pitch="0.0" yaw="90.0" />
                     <ScanShelves tomato_can_stocking_target_poses="{tomato_can_stocking_target_poses}" />
-                    <TraySetLoci tray_name="shelf" locus_poses="{tomato_can_stocking_target_poses}" occupied="false" />
+                    <TrayUpdatePlanningScene />
                 </Sequence>
-                <Pause time_limit_sec="2"/>
+                <Pause time_limit_sec="10"/>
                 <ClearShelfObstacles />
             </Sequence>
         </Repeat>

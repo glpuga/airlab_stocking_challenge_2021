@@ -32,9 +32,9 @@ class ScanShelvesActionNode : public BT::AsyncActionNode {
 
     {
       ek_challenger::ScanShelves srv;
-      srv.request.volume_width = 0.6;
-      srv.request.volume_height = 1.0;
-      srv.request.volume_depth = 2.0;
+      srv.request.volume_width = 1.0;
+      srv.request.volume_height = 1.2;
+      srv.request.volume_depth = 1.2;
 
       if (!scan_shelves_srv.call(srv)) {
         return BT::NodeStatus::FAILURE;

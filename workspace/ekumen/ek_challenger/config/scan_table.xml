@@ -11,6 +11,7 @@
                     <ScanTableStartScanning />
                     <Pause time_limit_sec="2"/>
                     <ScanTableGetResults detected_tomato_cans="{detected_tomato_cans}" />
+                    <Pause time_limit_sec="5"/>
                 </Sequence>
             </Sequence>
         </Repeat>

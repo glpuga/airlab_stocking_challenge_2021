@@ -64,7 +64,7 @@ class TrayModelImpl : public TrayModelInterface {
  private:
   struct LocusData {
     std::string locus_id;
-    geometry_msgs::Pose2D relative_pose;
+    geometry_msgs::Pose relative_pose;
     bool occupied{false};
     bool in_use{false};
 
@@ -113,7 +113,7 @@ class TrayModelImpl : public TrayModelInterface {
   void updateSceneAddingCans();
 
   geometry_msgs::PoseStamped convertRelativeToAbsolute(
-      const geometry_msgs::Pose2D &relative_pose) const;
+      const geometry_msgs::Pose &relative_pose) const;
 
   void publishMarkers() const;
 };

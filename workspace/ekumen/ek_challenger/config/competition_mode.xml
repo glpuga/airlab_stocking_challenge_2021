@@ -1,35 +1,62 @@
 <root main_tree_to_execute="root">
 
     <BehaviorTree ID="root">
+        <Sequence>
+            <SubTree ID="FullCompetitionMode" />
+        </Sequence>
+    </BehaviorTree>
+
+    <BehaviorTree ID="FullCompetitionMode">
         <Repeat num_cycles="-1">
             <Sequence>
-                <!-- <MoveBase goal="0;-1;0"/>
-                <SubTree ID="GetInRestPose" />
-                <SubTree ID="AnalyzeEnvironment" /> -->
-                <SubTree ID="GoToTable" />
+                <!-- <SubTree ID="GetInRestPose" /> -->
+                <SubTree ID="AnalyzeEnvironment" />
                 <Fallback>
                     <SubTree ID="DoYourTrick" />
                     <Pause time_limit_sec="30"/>
-                </Fallback>
+                </Fallback> -->
             </Sequence>
         </Repeat>
     </BehaviorTree>
 
     <BehaviorTree ID="AnalyzeEnvironment">
-        <Sequence>
-            <AlwaysSuccess/>
-        </Sequence>
+        <ForceSuccess>
+            <Sequence>
+                <TrayUpdatePlanningScene />
+                <AlwaysFailure/>
+                <MoveBase goal="0;0;0"/>
+                <HeadControl pitch="30.0" yaw="45" />
+                <HeadControl pitch="30.0" yaw="135" />
+                <HeadControl pitch="-30.0" yaw="45" />
+                <HeadControl pitch="-30.0" yaw="135" />
+                <MoveBase goal="2;-1;1.57"/>
+                <HeadControl pitch="30.0" yaw="45" />
+                <HeadControl pitch="30.0" yaw="135" />
+                <HeadControl pitch="-30.0" yaw="45" />
+                <HeadControl pitch="-30.0" yaw="135" />
+            </Sequence>
+        </ForceSuccess>
     </BehaviorTree>
 
-    <BehaviorTree ID="GoToTable">
-        <Sequence>
-            <MoveBase goal="1.0;-1.0;0"/>
-        </Sequence>
-    </BehaviorTree>
+
 
     <BehaviorTree ID="GetInRestPose">
         <Sequence>
             <GetArmJointsForPose pose="REST" joints_pose="{joints_pose}" />
+            <Parallel success_threshold="3" failure_threshold="3">
+                <Sequence >
+                    <HeadControl pitch="0" yaw="90" />
+                    <TorsoControl relative_height="0.95" />
+                </Sequence>
+                <SetArmJointsLeft joints_pose="{joints_pose}" />
+                <SetArmJointsRight joints_pose="{joints_pose}" />
+            </Parallel>
+        </Sequence>
+    </BehaviorTree>
+
+    <BehaviorTree ID="GetInUpTrayPose">
+        <Sequence>
+            <GetArmJointsForPose pose="UPTRAY" joints_pose="{joints_pose}" />
             <Parallel success_threshold="2" failure_threshold="2">
                 <SetArmJointsLeft joints_pose="{joints_pose}" />
                 <SetArmJointsRight joints_pose="{joints_pose}" />
@@ -37,10 +64,20 @@
         </Sequence>
     </BehaviorTree>
 
+    <!-- <BehaviorTree ID="UpdateOctomap">
+        <ForceSuccess>
+            <Sequence>
+                <HeadControl pitch="30.0" yaw="135" />
+                <Pause time_limit_sec="1"/>
+                <HeadControl pitch="-30.0" yaw="135" />
+                <Pause time_limit_sec="1"/>
+            </Sequence>
+        </ForceSuccess>
+    </BehaviorTree> -->
+
+
     <BehaviorTree ID="DoYourTrick">
         <Sequence>
-            <TrayUpdatePlanningScene />
-            <SubTree ID="GetInPickToTrayPrePose" />
             <ForceSuccess>
                 <SubTree ID="FillYourTray" />
             </ForceSuccess>
@@ -51,66 +88,91 @@
     </BehaviorTree>
 
 
-    <BehaviorTree ID="GetInPickToTrayPrePose">
+    <BehaviorTree ID="ScanTable">
         <Sequence>
-            <Parallel success_threshold="3" failure_threshold="3">
-                <TorsoControl relative_height="0.95" />
-                <HeadControl pitch="0.0" yaw="120.0" />
-                <Sequence>
-                    <GetArmJointsForPose pose="UPTRAY" joints_pose="{joints_pose}" />
-                    <Parallel success_threshold="2" failure_threshold="2">
-                        <SetArmJointsLeft joints_pose="{joints_pose}" />
-                        <SetArmJointsRight joints_pose="{joints_pose}" />
-                    </Parallel>
-                </Sequence>
-            </Parallel>
+            <TorsoControl relative_height="0.95" />
+            <HeadControl pitch="10.0" yaw="140.0" />
+            <ScanTableStartScanning />
+            <Pause time_limit_sec="2"/>
+            <ScanTableGetResults detected_tomato_cans="{detected_tomato_cans}" />
+            <TraySetLoci tray_name="table" locus_poses="{detected_tomato_cans}" occupied="true" />
+        </Sequence>
+    </BehaviorTree>
+
+    <BehaviorTree ID="ScanShelves">
+        <Sequence>
+            <TorsoControl relative_height="0.05" />
+            <HeadControl pitch="0.0" yaw="90.0" />
+            <Pause time_limit_sec="2"/>
+            <ScanShelves tomato_can_stocking_target_poses="{tomato_can_stocking_target_poses}" />
+            <TraySetLoci tray_name="shelf" locus_poses="{tomato_can_stocking_target_poses}" occupied="false" />
         </Sequence>
     </BehaviorTree>
 
     <BehaviorTree ID="FillYourTray">
         <Sequence>
+            <ClearShelfObstacles />
+            <SubTree ID="GetInUpTrayPose" />
+            <SubTree ID="GoToTable" />
+            <SubTree ID="ScanTable" />
+            <!-- <SubTree ID="UpdateOctomap" /> -->
+            <TrayUpdatePlanningScene />
             <SetBlackboard output_key="src_tray" value="table" />
             <SetBlackboard output_key="dst_tray" value="backtray" />
-            <Repeat num_cycles="3">
-                <ForceSuccess>
-                    <KeepRunningUntilFailure>
-                        <Fallback>
-                            <Sequence>
-                                <SubTree ID="LeftArmFillYourTray" src_tray="src_tray" dst_tray="dst_tray" />
-                                <SubTree ID="RightArmFillYourTray" src_tray="src_tray" dst_tray="dst_tray" />
-                            </Sequence>
-                            <SubTree ID="RightArmFillYourTray" src_tray="src_tray" dst_tray="dst_tray" />
-                            <ForceFailure>
-                                <SubTree ID="GetInPickToTrayPrePose" />
-                            </ForceFailure>
-                        </Fallback>
-                    </KeepRunningUntilFailure>
-                </ForceSuccess>
-            </Repeat>
+            <SubTree ID="MoveTomatoCans" src_tray="src_tray" dst_tray="dst_tray" />
+            <Backtrack target_distance_m="1.0"/>
+
         </Sequence>
     </BehaviorTree>
 
+    <BehaviorTree ID="GoToTable">
+        <Sequence>
+            <MoveBase goal="1.0;-0.5;0.0"/>
+            <MoveBase goal="2.2;-0.5;0.3"/>
+        </Sequence>
+    </BehaviorTree>
+
+    <BehaviorTree ID="GoToShelves">
+        <Sequence>
+            <MoveBase goal="2.2 ;-1.0;1.57"/>
+            <MoveBase goal="2.1;-0.2;1.5"/>
+        </Sequence>
+    </BehaviorTree>
+
+
     <BehaviorTree ID="FillTheShelf">
         <Sequence>
-            <SetBlackboard output_key="src_tray" value="backtray" />
+            <ClearShelfObstacles />
+            <SubTree ID="GetInRestPose" />
+            <SubTree ID="GoToShelves" />
+            <SubTree ID="ScanShelves" />
+            <TrayUpdatePlanningScene />
+            <!-- <SubTree ID="UpdateOctomap" /> -->
+            <!-- <SetBlackboard output_key="src_tray" value="backtray" />
             <SetBlackboard output_key="dst_tray" value="shelf" />
-            <Repeat num_cycles="3">
-                <ForceSuccess>
-                    <KeepRunningUntilFailure>
-                        <Fallback>
-                            <Sequence>
-                                <SubTree ID="LeftArmFillYourTray" src_tray="src_tray" dst_tray="dst_tray" />
-                                <SubTree ID="RightArmFillYourTray" src_tray="src_tray" dst_tray="dst_tray" />
-                            </Sequence>
-                            <SubTree ID="RightArmFillYourTray" src_tray="src_tray" dst_tray="dst_tray" />
-                            <ForceFailure>
-                                <SubTree ID="GetInPickToTrayPrePose" />
-                            </ForceFailure>
-                        </Fallback>
-                    </KeepRunningUntilFailure>
-                </ForceSuccess>
-            </Repeat>
+            <SubTree ID="MoveTomatoCans" src_tray="src_tray" dst_tray="dst_tray" /> -->
+            <Pause time_limit_sec="300"/>
+            <Backtrack target_distance_m="1.0"/>
         </Sequence>
+    </BehaviorTree>
+
+    <BehaviorTree ID="MoveTomatoCans">
+        <Repeat num_cycles="10">
+            <ForceSuccess>
+                <KeepRunningUntilFailure>
+                    <Fallback>
+                        <Sequence>
+                            <SubTree ID="LeftArmFillYourTray" src_tray="src_tray" dst_tray="dst_tray" />
+                            <SubTree ID="RightArmFillYourTray" src_tray="src_tray" dst_tray="dst_tray" />
+                        </Sequence>
+                        <SubTree ID="RightArmFillYourTray" src_tray="src_tray" dst_tray="dst_tray" />
+                        <ForceFailure>
+                            <SubTree ID="GetInUpTrayPose" />
+                        </ForceFailure>
+                    </Fallback>
+                </KeepRunningUntilFailure>
+            </ForceSuccess>
+        </Repeat>
     </BehaviorTree>
 
     <BehaviorTree ID="LeftArmFillYourTray">
@@ -168,4 +230,3 @@
     </BehaviorTree>
 
 </root>
-

@@ -46,6 +46,11 @@ bool ShelfScannerNode::scanShelvesCallback(
   ShelfScanner tray_finder{req.volume_width, req.volume_height,
                            req.volume_depth};
 
+  if (req.command == req.CLEAR) {
+    tray_finder.clearObstacles();
+    return true;
+  } 
+
   ROS_INFO_STREAM("ScanShelves command received for volumen ("
                   << req.volume_width << " x " << req.volume_height << " x "
                   << req.volume_depth << ")");

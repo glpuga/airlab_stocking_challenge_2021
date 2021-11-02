@@ -1,0 +1,171 @@
+<root main_tree_to_execute="root">
+
+    <BehaviorTree ID="root">
+        <Repeat num_cycles="-1">
+            <Sequence>
+                <!-- <MoveBase goal="0;-1;0"/>
+                <SubTree ID="GetInRestPose" />
+                <SubTree ID="AnalyzeEnvironment" /> -->
+                <SubTree ID="GoToTable" />
+                <Fallback>
+                    <SubTree ID="DoYourTrick" />
+                    <Pause time_limit_sec="30"/>
+                </Fallback>
+            </Sequence>
+        </Repeat>
+    </BehaviorTree>
+
+    <BehaviorTree ID="AnalyzeEnvironment">
+        <Sequence>
+            <AlwaysSuccess/>
+        </Sequence>
+    </BehaviorTree>
+
+    <BehaviorTree ID="GoToTable">
+        <Sequence>
+            <MoveBase goal="1.0;-1.0;0"/>
+        </Sequence>
+    </BehaviorTree>
+
+    <BehaviorTree ID="GetInRestPose">
+        <Sequence>
+            <GetArmJointsForPose pose="REST" joints_pose="{joints_pose}" />
+            <Parallel success_threshold="2" failure_threshold="2">
+                <SetArmJointsLeft joints_pose="{joints_pose}" />
+                <SetArmJointsRight joints_pose="{joints_pose}" />
+            </Parallel>
+        </Sequence>
+    </BehaviorTree>
+
+    <BehaviorTree ID="DoYourTrick">
+        <Sequence>
+            <TrayUpdatePlanningScene />
+            <SubTree ID="GetInPickToTrayPrePose" />
+            <ForceSuccess>
+                <SubTree ID="FillYourTray" />
+            </ForceSuccess>
+            <ForceSuccess>
+                <SubTree ID="FillTheShelf" />
+            </ForceSuccess>
+        </Sequence>
+    </BehaviorTree>
+
+
+    <BehaviorTree ID="GetInPickToTrayPrePose">
+        <Sequence>
+            <Parallel success_threshold="3" failure_threshold="3">
+                <TorsoControl relative_height="0.95" />
+                <HeadControl pitch="0.0" yaw="120.0" />
+                <Sequence>
+                    <GetArmJointsForPose pose="UPTRAY" joints_pose="{joints_pose}" />
+                    <Parallel success_threshold="2" failure_threshold="2">
+                        <SetArmJointsLeft joints_pose="{joints_pose}" />
+                        <SetArmJointsRight joints_pose="{joints_pose}" />
+                    </Parallel>
+                </Sequence>
+            </Parallel>
+        </Sequence>
+    </BehaviorTree>
+
+    <BehaviorTree ID="FillYourTray">
+        <Sequence>
+            <SetBlackboard output_key="src_tray" value="table" />
+            <SetBlackboard output_key="dst_tray" value="backtray" />
+            <Repeat num_cycles="3">
+                <ForceSuccess>
+                    <KeepRunningUntilFailure>
+                        <Fallback>
+                            <Sequence>
+                                <SubTree ID="LeftArmFillYourTray" src_tray="src_tray" dst_tray="dst_tray" />
+                                <SubTree ID="RightArmFillYourTray" src_tray="src_tray" dst_tray="dst_tray" />
+                            </Sequence>
+                            <SubTree ID="RightArmFillYourTray" src_tray="src_tray" dst_tray="dst_tray" />
+                            <ForceFailure>
+                                <SubTree ID="GetInPickToTrayPrePose" />
+                            </ForceFailure>
+                        </Fallback>
+                    </KeepRunningUntilFailure>
+                </ForceSuccess>
+            </Repeat>
+        </Sequence>
+    </BehaviorTree>
+
+    <BehaviorTree ID="FillTheShelf">
+        <Sequence>
+            <SetBlackboard output_key="src_tray" value="backtray" />
+            <SetBlackboard output_key="dst_tray" value="shelf" />
+            <Repeat num_cycles="3">
+                <ForceSuccess>
+                    <KeepRunningUntilFailure>
+                        <Fallback>
+                            <Sequence>
+                                <SubTree ID="LeftArmFillYourTray" src_tray="src_tray" dst_tray="dst_tray" />
+                                <SubTree ID="RightArmFillYourTray" src_tray="src_tray" dst_tray="dst_tray" />
+                            </Sequence>
+                            <SubTree ID="RightArmFillYourTray" src_tray="src_tray" dst_tray="dst_tray" />
+                            <ForceFailure>
+                                <SubTree ID="GetInPickToTrayPrePose" />
+                            </ForceFailure>
+                        </Fallback>
+                    </KeepRunningUntilFailure>
+                </ForceSuccess>
+            </Repeat>
+        </Sequence>
+    </BehaviorTree>
+
+    <BehaviorTree ID="LeftArmFillYourTray">
+        <Sequence>
+            <TrayPickOccupiedLocus tray_name="{src_tray}" side="LEFT" locus_id="{src_locus_id}" />
+            <Fallback>
+                <Sequence>
+                    <TrayPickEmptyLocus tray_name="{dst_tray}" side="LEFT" locus_id="{dst_locus_id}" locus_pose="{dst_locus_pose}" />
+                    <Fallback>
+                        <Sequence>
+                            <TrayUpdatePlanningScene />
+                            <PickAndPlaceLeft object_id="{src_locus_id}" target_pose="{dst_locus_pose}" />
+                            <TraySetLocusState tray_name="{src_tray}" locus_id="{src_locus_id}" occupied="false" />
+                            <TraySetLocusState tray_name="{dst_tray}" locus_id="{dst_locus_id}" occupied="true" />
+                        </Sequence>
+                        <ForceFailure>
+                            <TrayReleaseLocus tray_name="{dst_tray}" locus_id="{dst_locus_id}" />
+                        </ForceFailure>
+                    </Fallback>
+                    <TrayReleaseLocus tray_name="{dst_tray}" locus_id="{dst_locus_id}" />
+                </Sequence>
+                <ForceFailure>
+                    <TrayReleaseLocus tray_name="{src_tray}" locus_id="{src_locus_id}" />
+                </ForceFailure>
+            </Fallback>
+            <TrayReleaseLocus tray_name="{src_tray}" locus_id="{src_locus_id}" />
+        </Sequence>
+    </BehaviorTree>
+
+    <BehaviorTree ID="RightArmFillYourTray">
+        <Sequence>
+            <TrayPickOccupiedLocus tray_name="{src_tray}" side="RIGHT" locus_id="{src_locus_id}" />
+            <Fallback>
+                <Sequence>
+                    <TrayPickEmptyLocus tray_name="{dst_tray}" side="RIGHT" locus_id="{dst_locus_id}" locus_pose="{dst_locus_pose}" />
+                    <Fallback>
+                        <Sequence>
+                            <TrayUpdatePlanningScene />
+                            <PickAndPlaceRight object_id="{src_locus_id}" target_pose="{dst_locus_pose}" />
+                            <TraySetLocusState tray_name="{src_tray}" locus_id="{src_locus_id}" occupied="false" />
+                            <TraySetLocusState tray_name="{dst_tray}" locus_id="{dst_locus_id}" occupied="true" />
+                        </Sequence>
+                        <ForceFailure>
+                            <TrayReleaseLocus tray_name="{dst_tray}" locus_id="{dst_locus_id}" />
+                        </ForceFailure>
+                    </Fallback>
+                    <TrayReleaseLocus tray_name="{dst_tray}" locus_id="{dst_locus_id}" />
+                </Sequence>
+                <ForceFailure>
+                    <TrayReleaseLocus tray_name="{src_tray}" locus_id="{src_locus_id}" />
+                </ForceFailure>
+            </Fallback>
+            <TrayReleaseLocus tray_name="{src_tray}" locus_id="{src_locus_id}" />
+        </Sequence>
+    </BehaviorTree>
+
+</root>
+

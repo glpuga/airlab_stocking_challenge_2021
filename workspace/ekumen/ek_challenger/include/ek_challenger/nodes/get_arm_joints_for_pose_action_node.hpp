@@ -37,7 +37,8 @@ class GetArmJointsForPoseActionNode : public BT::AsyncActionNode {
   std::map<std::string, ArmJointsPose> stored_poses_ = {
       {"REST", {-63, 84, 156, 98, -90, 80, 0}},
       {"EXTENDED", {0, 0, 0, 0, 0, 0, 0}},
-      {"UPTRAY", {-30, -30, 0, 90, 120, -60, -15}},
+      {"UPTRAY", {60, 0, 0, 90, 120, 0, -15}},
+      {"READY", {60, -30, 60, 30, -100, 0, 0}},
       {"GRIPPING", {30, 0, 90, 100, 75, -15, 105}},
   };
 
