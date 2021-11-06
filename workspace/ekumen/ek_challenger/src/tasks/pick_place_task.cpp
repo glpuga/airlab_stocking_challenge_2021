@@ -57,25 +57,25 @@ PickPlaceTask::PickPlaceTask(const std::string &side) {
 
   // Rest pose:
   //
-  // resting_arm_joint_poses_ = {
-  //     {fmt::format("arm_{}_1_joint", side), to_rad(-60)},
-  //     {fmt::format("arm_{}_2_joint", side), to_rad(84)},
-  //     {fmt::format("arm_{}_3_joint", side), to_rad(156)},
-  //     {fmt::format("arm_{}_4_joint", side), to_rad(98)},
-  //     {fmt::format("arm_{}_5_joint", side), to_rad(-90)},
-  //     {fmt::format("arm_{}_6_joint", side), to_rad(30)},
-  //     {fmt::format("arm_{}_7_joint", side), to_rad(0)}};
+  resting_arm_joint_poses_ = {
+      {fmt::format("arm_{}_1_joint", side), to_rad(-60)},
+      {fmt::format("arm_{}_2_joint", side), to_rad(84)},
+      {fmt::format("arm_{}_3_joint", side), to_rad(156)},
+      {fmt::format("arm_{}_4_joint", side), to_rad(98)},
+      {fmt::format("arm_{}_5_joint", side), to_rad(-90)},
+      {fmt::format("arm_{}_6_joint", side), to_rad(80)},
+      {fmt::format("arm_{}_7_joint", side), to_rad(0)}};
 
   // Uptray pose :
 
-  resting_arm_joint_poses_ = {
-      {fmt::format("arm_{}_1_joint", side), to_rad(60)},
-      {fmt::format("arm_{}_2_joint", side), to_rad(0)},
-      {fmt::format("arm_{}_3_joint", side), to_rad(0)},
-      {fmt::format("arm_{}_4_joint", side), to_rad(90)},
-      {fmt::format("arm_{}_5_joint", side), to_rad(120)},
-      {fmt::format("arm_{}_6_joint", side), to_rad(-60)},
-      {fmt::format("arm_{}_7_joint", side), to_rad(-15)}};
+  // resting_arm_joint_poses_ = {
+  //     {fmt::format("arm_{}_1_joint", side), to_rad(60)},
+  //     {fmt::format("arm_{}_2_joint", side), to_rad(0)},
+  //     {fmt::format("arm_{}_3_joint", side), to_rad(0)},
+  //     {fmt::format("arm_{}_4_joint", side), to_rad(90)},
+  //     {fmt::format("arm_{}_5_joint", side), to_rad(120)},
+  //     {fmt::format("arm_{}_6_joint", side), to_rad(-60)},
+  //     {fmt::format("arm_{}_7_joint", side), to_rad(-15)}};
 
   // Uptray pose:
   //
@@ -96,14 +96,19 @@ PickPlaceTask::PickPlaceTask(const std::string &side) {
 
 bool PickPlaceTask::build(const std::string &object_name,
                           const geometry_msgs::PoseStamped &target_pose,
-                          const bool move_to_home, const bool mode2) {
+                          const bool move_to_home, const bool flat_hand_mode) {
   ROS_INFO("Initializing task pipeline");
 
-  {
-    auto to_rad = [](const double deg) { return 3.14159 * deg / 180.0; };
+  auto to_rad = [](const double deg) { return 3.14159 * deg / 180.0; };
 
+  const double grasp_angle = flat_hand_mode ? 0.0 : -5.0;
+
+  const double approach_vector_x_comp = std::cos(to_rad(grasp_angle));
+  const double approach_vector_z_comp = -std::sin(to_rad(grasp_angle));
+
+  {
     tf2::Quaternion q;
-    q.setRPY(to_rad(0.0), to_rad(mode2 ? 0 : -10.0), to_rad(0.0));
+    q.setRPY(to_rad(0.0), to_rad(grasp_angle), to_rad(0.0));
     grasp_frame_transform_.pose.orientation.x = q.x();
     grasp_frame_transform_.pose.orientation.y = q.y();
     grasp_frame_transform_.pose.orientation.z = q.z();
@@ -215,8 +220,8 @@ bool PickPlaceTask::build(const std::string &object_name,
       // Set hand forward direction
       geometry_msgs::Vector3Stamped direction_vector;
       direction_vector.header.frame_id = hand_frame_;
-      direction_vector.vector.x = 1.0;
-      direction_vector.vector.z = mode2 ? 0.0 : -1.0;
+      direction_vector.vector.x = approach_vector_x_comp;
+      direction_vector.vector.z = approach_vector_z_comp;
       stage->setDirection(direction_vector);
 
       grasp->insert(std::move(stage));
@@ -250,15 +255,23 @@ bool PickPlaceTask::build(const std::string &object_name,
       grasp->insert(std::move(wrapper));
     }
 
-    /* Allow Collision (hand object) */
+    /* Allow Collision (hand/object) */
     {
       auto stage = std::make_unique<stages::ModifyPlanningScene>(
           "allow collision (hand <-> object)");
-      stage->allowCollisions(object_name,
+      stage->allowCollisions({object_name, "target"},
                              task_->getRobotModel()
                                  ->getJointModelGroup(hand_group_name_)
                                  ->getLinkModelNamesWithCollisionGeometry(),
                              true);
+      grasp->insert(std::move(stage));
+    }
+
+    /* Allow collision (object <-> target) */
+    {
+      auto stage = std::make_unique<stages::ModifyPlanningScene>(
+          "allow collision (object_name,target)");
+      stage->allowCollisions({object_name}, {"target"}, true);
       grasp->insert(std::move(stage));
     }
 
@@ -280,7 +293,7 @@ bool PickPlaceTask::build(const std::string &object_name,
       grasp->insert(std::move(stage));
     }
 
-    /* Allow collision (object <-> support) */
+    /* Allow collision (object/support) */
     {
       auto stage = std::make_unique<stages::ModifyPlanningScene>(
           "allow collision (object_name,support)");
@@ -338,6 +351,28 @@ bool PickPlaceTask::build(const std::string &object_name,
     place->properties().configureInitFrom(Stage::PARENT,
                                           {"eef", "hand", "group"});
 
+    /* get in the vertical horizontally */
+
+    {
+      auto stage = std::make_unique<stages::MoveRelative>("get in vertical",
+                                                          cartesian_planner);
+
+      stage->properties().set("marker_ns", "get_in_the_vertical");
+      stage->properties().set("link", hand_frame_);
+      stage->properties().configureInitFrom(Stage::PARENT, {"group"});
+      stage->setMinMaxDistance(0.05, 0.4);
+
+      // Set motion to place the object
+      geometry_msgs::Vector3Stamped vec;
+      vec.header.frame_id = hand_frame_;
+
+      vec.vector.x = approach_vector_x_comp;
+      vec.vector.z = approach_vector_z_comp;
+
+      stage->setDirection(vec);
+      place->insert(std::move(stage));
+    }
+
     /* Lower Object */
 
     {
@@ -345,19 +380,14 @@ bool PickPlaceTask::build(const std::string &object_name,
                                                           cartesian_planner);
 
       stage->properties().set("marker_ns", "lower_object");
-      stage->properties().set("link", hand_frame_);
+      stage->properties().set("link", world_frame_);
       stage->properties().configureInitFrom(Stage::PARENT, {"group"});
-      stage->setMinMaxDistance(0.01, lift_object_max_dist_);
+      stage->setMinMaxDistance(0.005, 0.15);
 
-      // Set downward direction
+      // Set motion to place the object
       geometry_msgs::Vector3Stamped vec;
       vec.header.frame_id = world_frame_;
-
-      if (mode2) {
-        vec.vector.x = 1.0;
-      } else {
-        vec.vector.z = -1.0;
-      }
+      vec.vector.z = -1;
 
       stage->setDirection(vec);
       place->insert(std::move(stage));
@@ -423,19 +453,38 @@ bool PickPlaceTask::build(const std::string &object_name,
       place->insert(std::move(stage));
     }
 
+    /* lift hand */
+
+    {
+      auto stage = std::make_unique<stages::MoveRelative>("up before retreat",
+                                                          cartesian_planner);
+      stage->properties().configureInitFrom(Stage::PARENT, {"group"});
+      stage->properties().set("link", world_frame_);
+      stage->setMinMaxDistance(0.01, 0.20);
+      stage->properties().set("marker_ns", "up_pre_retreat");
+      
+      // Set motion to place the object
+      geometry_msgs::Vector3Stamped vec;
+      vec.header.frame_id = world_frame_;
+      vec.vector.z = 1;
+
+      stage->setDirection(vec);
+      place->insert(std::move(stage));
+    }
+
     /* Retreat Motion */
 
     {
       auto stage = std::make_unique<stages::MoveRelative>("retreat after place",
                                                           cartesian_planner);
       stage->properties().configureInitFrom(Stage::PARENT, {"group"});
-      stage->setMinMaxDistance(approach_object_min_dist_,
-                               approach_object_max_dist_);
+      stage->setMinMaxDistance(0.10, 0.4);
       stage->setIKFrame(hand_frame_);
       stage->properties().set("marker_ns", "retreat");
       geometry_msgs::Vector3Stamped vec;
       vec.header.frame_id = hand_frame_;
-      vec.vector.x = -1.0;
+      vec.vector.x = -approach_vector_x_comp;
+      vec.vector.z = -approach_vector_z_comp;
       stage->setDirection(vec);
       place->insert(std::move(stage));
     }

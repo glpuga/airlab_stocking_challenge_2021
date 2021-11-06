@@ -11,10 +11,12 @@
 #include <behaviortree_cpp_v3/loggers/bt_cout_logger.h>
 #include <behaviortree_cpp_v3/loggers/bt_zmq_publisher.h>
 #include <ros/console.h>
+#include <tf2/LinearMath/Quaternion.h>
 
 // project
 #include <ek_challenger/bt_challenger.hpp>
 #include <ek_challenger/nodes/backtrack_action_node.hpp>
+#include <ek_challenger/nodes/clear_octomaps_action_node.hpp>
 #include <ek_challenger/nodes/create_obstacle_action_node.hpp>
 #include <ek_challenger/nodes/get_arm_joints_for_pose_action_node.hpp>
 #include <ek_challenger/nodes/gripper_control_action_node.hpp>
@@ -33,7 +35,6 @@
 #include <ek_challenger/nodes/tray_set_loci_action_node.hpp>
 #include <ek_challenger/nodes/tray_set_locus_state_action_node.hpp>
 #include <ek_challenger/nodes/tray_update_planning_scene_action_node.hpp>
-#include <ek_challenger/nodes/clear_shelf_obstacles_action_node.hpp>
 #include <ek_challenger/tray_data.hpp>
 #include <ek_challenger/tray_model_backtray.hpp>
 #include <ek_challenger/tray_model_generic.hpp>
@@ -81,13 +82,13 @@ void BehaviorTreeNode::registerNodes(BT::BehaviorTreeFactory &factory) {
   factory.registerNodeType<TorsoControlActionNode>("TorsoControl");
   factory.registerNodeType<BacktrackActionNode>("Backtrack");
   factory.registerNodeType<CreateObstacleActionNode>("CreateObstacle");
+  factory.registerNodeType<ClearOctomapActionNode>("ClearOctomap");
 
   factory.registerNodeType<ScanTableStartScanningActionNode>(
       "ScanTableStartScanning");
   factory.registerNodeType<ScanTableGetResultsActionNode>(
       "ScanTableGetResults");
   factory.registerNodeType<ScanShelvesActionNode>("ScanShelves");
-  factory.registerNodeType<ClearShelfObstaclesActionNode>("ClearShelfObstacles");
 
   factory.registerBuilder<PickAndPlaceActionNode>(
       "PickAndPlaceLeft",
@@ -135,13 +136,20 @@ void BehaviorTreeNode::registerNodes(BT::BehaviorTreeFactory &factory) {
       "GetArmJointsForPose");
 
   auto make_pose_stamped = [](const std::string &frame, const double x,
-                              const double y, const double z) {
+                              const double y, const double z,
+                              const double theta = 0) {
+    tf2::Quaternion q;
+    q.setRPY(0, 0, theta);
+
     geometry_msgs::PoseStamped pose;
     pose.header.frame_id = frame;
     pose.pose.position.x = x;
     pose.pose.position.y = y;
     pose.pose.position.z = z;
-    pose.pose.orientation.w = 1;
+    pose.pose.orientation.x = q.x();
+    pose.pose.orientation.y = q.y();
+    pose.pose.orientation.z = q.z();
+    pose.pose.orientation.w = q.w();
     return pose;
   };
 
@@ -155,7 +163,7 @@ void BehaviorTreeNode::registerNodes(BT::BehaviorTreeFactory &factory) {
   TrayData trays;
 
   trays["table"] = std::make_shared<TrayModelTable>(
-      "table", make_pose_stamped("map", 3.0, -0.1, 0.66),
+      "table", make_pose_stamped("map", 3.04, 0.0, 0.33, 0.05),
       std::vector<std::string>{"left", "right"});
   // trays["table"]->addLocus(make_pose(0.1, 0.15), true, 0);
   // trays["table"]->addLocus(make_pose(0.1, 0.05), true, 0);
@@ -171,13 +179,13 @@ void BehaviorTreeNode::registerNodes(BT::BehaviorTreeFactory &factory) {
       std::vector<std::string>{"left", "right"});
   // trays["backtray"]->addLocus(make_pose(0.08, -0.1), false, 0);
   // trays["backtray"]->addLocus(make_pose(0.08, 0.1), false, 0);
-  trays["backtray"]->addLocus(make_pose(0.04, -0.1), false, 0);
-  trays["backtray"]->addLocus(make_pose(0.04, 0.1), false, 0);
+  // trays["backtray"]->addLocus(make_pose(0.02, -0.1), false, 0);
+  // trays["backtray"]->addLocus(make_pose(0.02, 0.1), false, 0);
   trays["backtray"]->addLocus(make_pose(-0.10, -0.1), false, 0);
   trays["backtray"]->addLocus(make_pose(-0.10, 0.1), false, 0);
 
   trays["shelf"] = std::make_shared<TrayModelGeneric>(
-      "shelf", make_pose_stamped("base_link", 0.5, 0.0, 1.00),
+      "shelf", make_pose_stamped("map", 0.0, 0.0, 0.00, 1.57),
       std::vector<std::string>{"left", "right"});
   // trays["table"]->addLocus(make_pose(0.1, 0.15), false, 0);
   // trays["shelf"]->addLocus(make_pose(0.1, 0.05), false, 0);

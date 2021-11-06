@@ -75,9 +75,7 @@ class TrayModelImpl : public TrayModelInterface {
   const std::string base_link_frame_{"base_link"};
   const int32_t max_allocation_attempts_{20};
 
-  const double can_radius_{0.035};
-  const double can_height_{0.115};
-  const double tray_to_can_distance_{0.005};
+  const double tray_to_can_distance_{0.00};  // was 0.005
 
   const geometry_msgs::PoseStamped pose_;
   CollisionObjectManager collision_object_manager_;

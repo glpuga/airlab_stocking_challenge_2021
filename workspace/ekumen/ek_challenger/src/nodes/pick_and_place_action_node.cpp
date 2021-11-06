@@ -31,6 +31,11 @@ BT::NodeStatus PickAndPlaceActionNode::tick() {
     throw BT::RuntimeError("missing required input [target_pose]");
   }
 
+  bool flat_hand_mode{false};
+  if (!getInput<bool>("flat_hand_mode", flat_hand_mode)) {
+    throw BT::RuntimeError("missing required input [flat_hand_mode]");
+  }
+
   ros::NodeHandle nh;
   ros::ServiceClient plan_srv =
       nh.serviceClient<ek_challenger::TaskConstructorPlan>(
@@ -48,6 +53,7 @@ BT::NodeStatus PickAndPlaceActionNode::tick() {
     srv.request.robot_side = side_;
     srv.request.source_object_id = object_id;
     srv.request.target_pose = target_pose;
+    srv.request.flat_hand_mode = flat_hand_mode;
     if (!plan_srv.call(srv)) {
       return BT::NodeStatus::FAILURE;
     }

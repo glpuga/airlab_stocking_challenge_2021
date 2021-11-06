@@ -28,6 +28,8 @@ class PickAndPlaceActionNode : public BT::AsyncActionNode {
             "object_id"), /* planning scene object to pick */
         BT::InputPort<geometry_msgs::PoseStamped>(
             "target_pose"), /* target pose */
+        BT::InputPort<geometry_msgs::PoseStamped>(
+            "flat_hand_mode"), /* flat_hand_mode */
     };
   }
 

@@ -2,10 +2,16 @@
 
     <BehaviorTree ID="BehaviorTree">
         <Sequence>
-            <HeadControl      pitch="0.0" yaw="10.0" />
+            <!-- <HeadControl      pitch="0.0" yaw="10.0" />
             <HeadControl      pitch="0.0" yaw="170.0" />
             <HeadControl      pitch="-80.0" yaw="90.0" />
-            <HeadControl      pitch="80.0" yaw="90.0" />
+            <HeadControl      pitch="80.0" yaw="90.0" /> -->
+            <HeadControl      pitch="0.0" yaw="135.0" />
+            <Pause       time_limit_sec="2"/>
+            <!-- <HeadControl      pitch="90.0" yaw="165.0" />
+            <Pause       time_limit_sec="2"/>
+            <HeadControl      pitch="-60.0" yaw="115.0" />
+            <Pause       time_limit_sec="2"/> -->
         </Sequence>
     </BehaviorTree>
 

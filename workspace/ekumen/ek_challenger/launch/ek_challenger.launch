@@ -9,9 +9,7 @@
   <include file="$(find ek_utils)/launch/rviz_tiago_moveit.launch" if="$(arg rviz)" />
   <include file="$(find ek_utils)/launch/joystick_teleop.launch" if="$(arg joystick)" />
 
-  <!-- <include file="$(find ek_challenger)/launch/octomap_server.launch" /> -->
-
-  <include file="$(find ek_challenger)/launch/autonomy.launch" if="$(arg auto)">
+    <include file="$(find ek_challenger)/launch/autonomy.launch" if="$(arg auto)">
     <arg name="tree" value="$(arg tree)" />
   </include>
 
