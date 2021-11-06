@@ -3,7 +3,7 @@
     <BehaviorTree ID="BehaviorTree">
         <Repeat num_cycles="-1">
             <Sequence>
-                <MoveBase goal="1.4;0;0"/>
+                <!-- <MoveBase goal="1.4;0;0"/> -->
                 <MoveBase goal="2.3;-0.1;0"/>
                 <Sequence>
                     <TorsoControl relative_height="0.95" />
@@ -11,7 +11,9 @@
                     <ScanTableStartScanning />
                     <Pause time_limit_sec="2"/>
                     <ScanTableGetResults detected_tomato_cans="{detected_tomato_cans}" />
-                    <Pause time_limit_sec="5"/>
+                    <TraySetLoci tray_name="table" locus_poses="{detected_tomato_cans}" occupied="true" />
+                    <TrayUpdatePlanningScene />
+                    <Pause time_limit_sec="3"/>
                 </Sequence>
             </Sequence>
         </Repeat>

@@ -96,9 +96,7 @@ namespace ek_challenger
                                         std::string &locus_id)
   {
     std::lock_guard<std::mutex> l{mutex_};
-    (void)from_side;
     return pickLocusWithGivenOccupiedState(from_side, locus_id, true);
-    // return pickLocusWithGivenOccupiedStateByDepth(locus_id, true, false);
   }
 
   void TrayModelImpl::setLocusState(const std::string &locus_id,
@@ -142,10 +140,10 @@ namespace ek_challenger
   std::array<std::set<std::string>, 8>
   TrayModelImpl::findApproachDirectionForOccupiedLoci()
   {
-    auto get_bin_index = [](const geometry_msgs::PoseStamped &inner,
-                            const geometry_msgs::PoseStamped &outer) {
-      const auto xdiff = outer.pose.position.x - inner.pose.position.x;
-      const auto ydiff = outer.pose.position.y - inner.pose.position.y;
+    auto get_bin_index = [](const geometry_msgs::PoseStamped &target,
+                            const geometry_msgs::PoseStamped &obstacle) {
+      const auto xdiff = obstacle.pose.position.x - target.pose.position.x;
+      const auto ydiff = obstacle.pose.position.y - target.pose.position.y;
       const auto angle_deg = (180.0 / 3.1415) * std::atan2(ydiff, xdiff);
       // cheap and dirty to make sure we don't get negative indexes
       const auto bin_index = ((static_cast<int>(angle_deg) + 360) / 45) % 8;
@@ -154,41 +152,44 @@ namespace ek_challenger
 
     std::array<std::set<std::string>, 8> approach_direction_sets;
 
-    for (const auto &outer_pair : tomato_can_loci_)
+    for (const auto &target_pair : tomato_can_loci_)
     {
-      const auto &outer_id = outer_pair.first;
-      const auto &outer_pose = outer_pair.second.base_link_pose;
+      const auto &target_id = target_pair.first;
+      const auto &target_pose = target_pair.second.base_link_pose;
 
-      std::array<bool, 8> bins;
-      std::for_each(bins.begin(), bins.end(), [](bool &item) { item = true; });
+      std::array<bool, 8> directions_free_of_obstacles;
+      std::for_each(directions_free_of_obstacles.begin(), directions_free_of_obstacles.end(), [](bool &item) { item = true; });
 
-      for (const auto &inner_pair : tomato_can_loci_)
+      for (const auto &obstacle_pair : tomato_can_loci_)
       {
-        const auto &inner_id = inner_pair.first;
-        const auto &inner_pose = inner_pair.second.base_link_pose;
+        const auto &obstacle_id = obstacle_pair.first;
+        const auto &obstacle_pose = obstacle_pair.second.base_link_pose;
 
         // don't check an object with itself
-        if (outer_id == inner_id)
+        if (target_id == obstacle_id)
         {
           continue;
         }
 
-        const auto bin_index = get_bin_index(outer_pose, inner_pose);
+        const auto bin_index = get_bin_index(target_pose, obstacle_pose);
 
-        if (inner_pair.second.occupied)
+        if (obstacle_pair.second.occupied)
         {
-          bins[bin_index] = false;
+          directions_free_of_obstacles[bin_index] = false;
+          // also mark one before and one after, since those are very likely partially obstructed
+          directions_free_of_obstacles[(bin_index + 1) % 8] = false;
+          directions_free_of_obstacles[(bin_index + 7) % 8] = false;
         }
       }
 
       // add object id to the sets for free approach directions
-      for (size_t i = 0; i < bins.size(); ++i)
+      for (size_t i = 0; i < directions_free_of_obstacles.size(); ++i)
       {
         // if a given approach direction is free add the object id to the
         // corresponding set
-        if (bins[i])
+        if (directions_free_of_obstacles[i])
         {
-          approach_direction_sets[i].insert(outer_id);
+          approach_direction_sets[i].insert(target_id);
         }
       }
     }
@@ -216,34 +217,34 @@ namespace ek_challenger
       const auto &outer_id = outer_pair.first;
       const auto &outer_pose = outer_pair.second.base_link_pose;
 
-      std::array<bool, 8> bins;
-      std::for_each(bins.begin(), bins.end(), [](bool &item) { item = true; });
+      std::array<bool, 8> directions_free_of_obstacles;
+      std::for_each(directions_free_of_obstacles.begin(), directions_free_of_obstacles.end(), [](bool &item) { item = true; });
 
-      for (const auto &inner_pair : tomato_can_loci_)
+      for (const auto &obstacle_pair : tomato_can_loci_)
       {
-        const auto &inner_id = inner_pair.first;
-        const auto &inner_pose = inner_pair.second.base_link_pose;
+        const auto &obstacle_id = obstacle_pair.first;
+        const auto &obstacle_pose = obstacle_pair.second.base_link_pose;
 
         // don't check an object with itself
-        if (outer_id == inner_id)
+        if (outer_id == obstacle_id)
         {
           continue;
         }
 
-        const auto bin_index = get_bin_index(outer_pose, inner_pose);
+        const auto bin_index = get_bin_index(outer_pose, obstacle_pose);
 
-        if (!inner_pair.second.occupied)
+        if (!obstacle_pair.second.occupied)
         {
-          bins[bin_index] = false;
+          directions_free_of_obstacles[bin_index] = false;
         }
       }
 
       // add object id to the sets for free approach directions
-      for (size_t i = 0; i < bins.size(); ++i)
+      for (size_t i = 0; i < directions_free_of_obstacles.size(); ++i)
       {
         // if a given approach direction is free add the object id to the
         // corresponding set
-        if (bins[i])
+        if (directions_free_of_obstacles[i])
         {
           approach_direction_sets[i].insert(outer_id);
         }
@@ -358,13 +359,13 @@ namespace ek_challenger
 
   std::string TrayModelImpl::pickARandomObjectIdFromBins(
       const std::set<int32_t> &indexes,
-      const std::array<std::set<std::string>, 8> &bins)
+      const std::array<std::set<std::string>, 8> &directions_free_of_obstacles)
   {
     // merge all valid sets into one larger set
     std::set<std::string> full_set;
     for (const auto index : indexes)
     {
-      const auto &partial_bin = bins[index];
+      const auto &partial_bin = directions_free_of_obstacles[index];
       for (const auto &id : partial_bin)
       {
         full_set.insert(id);
@@ -400,13 +401,13 @@ namespace ek_challenger
 
   void TrayModelImpl::updateSceneAddingCans()
   {
-    for (const auto &inner_pair : tomato_can_loci_)
+    for (const auto &obstacle_pair : tomato_can_loci_)
     {
-      const auto &id = inner_pair.first;
+      const auto &id = obstacle_pair.first;
       const auto &pose =
-          convertRelativeToAbsolute(inner_pair.second.relative_pose);
+          convertRelativeToAbsolute(obstacle_pair.second.relative_pose);
       collision_object_manager_.addCylinder(id, pose, can_radius_, can_height_,
-                                            inner_pair.second.occupied);
+                                            obstacle_pair.second.occupied);
     }
   }
 

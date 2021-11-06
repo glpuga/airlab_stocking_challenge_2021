@@ -9,18 +9,19 @@
 // project
 #include <ek_challenger/tray_model_impl.hpp>
 
-namespace ek_challenger {
+namespace ek_challenger
+{
 
-class TrayModelTable : public TrayModelImpl {
- public:
-  TrayModelTable(const std::string &name,
-                 const geometry_msgs::PoseStamped &pose,
-                 const std::vector<std::string> &moveit_namespaces)
-      : TrayModelImpl(name, pose, moveit_namespaces) {}
-private:
-  void updateSceneAddingFrame(CollisionObjectManager &om) override {
-    om.addBox("table", trayPose(), 1.0, 1.0, 0.03);
-  }
-};
+  class TrayModelTable : public TrayModelImpl
+  {
+  public:
+    TrayModelTable(const std::string &name,
+                   const geometry_msgs::PoseStamped &pose,
+                   const std::vector<std::string> &moveit_namespaces)
+        : TrayModelImpl(name, pose, moveit_namespaces) {}
 
-}  // namespace ek_challenger
+  private:
+    void updateSceneAddingFrame(CollisionObjectManager &) override {}
+  };
+
+} // namespace ek_challenger
