@@ -6,15 +6,15 @@ This is the submission information for Team Ekumen, on the day of the final dead
 
 This is the second submission we make. We made an incomplete submission for the deadline of November 1st. For that deadline unfortunately we had not completed an end-to-end solution to the challenge in time, but we had worked hard on the challenge and we wanted to share how far we had made it into the solution by submitting our code and video.
 
-However, after the organization invited the participants to keep submitting solutions until a new deadline set on November 8th, we made the effort to complete the missing functionality before this new deadline. The submission files and media (code + youtube video + this file) have been updated to reflect that.
+However, after the organization invited the participants to keep submitting solutions until a new deadline set on November 8th, we made the effort to complete the missing functionality before this new deadline. The submission files and media (code + youtube video + this file) have been updated for this new date.
 
-While we had not managed to complete functionality for the deadline of Nov 1st, we have made good progress since then and we can now submit a version that can perform product stocking.
+While we had not managed to complete functionality for the deadline of Nov 1st, we have made good progress since then and we can now submit a version that can perform product stocking in the simulated environment.
 
 ## Video of the submission at work
 
 Link to the video on youtube: https://youtu.be/N2B1DwXFJD4
 
-The video is also present in a file within `Final files for submission` in this repository.
+The video is also present in a file within the `Final files for submission/` folder in this repository.
 
 ## General approach
 
@@ -26,15 +26,21 @@ We chose the following strategy:
 5. The robot then transfers the cans to the shelf.
 6. The process gets repeated as many times as necessary.
 
-## Contents of the submission
-
 Our code, on the date of Nov 8th, can perform all 6 items in the list above. Our approach still needs tunning, and the behavior is not totally repeatable from run to run.
 
-The location of the table and the general location of the shelves are hardcoded in the robot behavior file loaded with BehaviorTree.CPP. The products on the table and the location of the particular shelf to stock, on the other hand, are found by the robot using sensor data.
+The location of the table and the general location of the shelves are hardcoded in the robot behavior file loaded by BehaviorTree.CPP. The products on the table and the location of the particular shelf to stock, on the other hand, are found by the robot using sensor data.
 
-Initially we would have wanted to detect the table and the shelf to stock using image recognition, but unfortunately this feature has not been completed in time for this submission. Currently the location of the table is hardcoded on the behavior file, which is an xml file that encodes the behavior of the robot that solves this challenge. This file is a text file, however, and can therefore be easily updated.
+Initially we would have wanted to detect the table and the shelf to stock using image recognition, but unfortunately this feature was not completed in time for this submission. Currently the location of the table is hardcoded on the behavior file, which is an xml file that encodes the behavior of the robot that solves this challenge. This file is a text file, however, and can therefore be easily updated.
 
-The location of the shelf to stock is detected using sensors, but lacking image recognition to detect the tomato cans on the shelf, we implemented the detection of the shelf using a heuristic algorithm that will try to stock any shelf where two levels of tomato cans can be stacked one top of another.
+The location of the shelf to stock is detected using sensors, but lacking image recognition to detect the tomato cans on the shelf, we implemented the detection of the shelf using a heuristic algorithm that will try to stock any shelf where two levels of tomato cans can be stacked one top of another. A general location of the shelves is encoded in the behavior file, for the robot to know where to look at.
+
+## Contents of the submission
+
+This repository contains all of the code to run our solution:
+- within `docker/` is the Docker image and the helper script used to run our devel environment. See instructions below.
+- Within `workspace/` the totality of our code can be found, both our own code and third-party packages that we use and build from source. Except for a few early tools and scripts, all of the code of our solution is within the `ek_challenger` package in `workspace/ekumen/`.
+- The `darknet/` and `docker_darknet/` folders should be ignored, since they are part of a feature that is not used in the code submmitted.
+- Other files and folder came from the original repository template provided by the organization.
 
 ## Tools used
 
@@ -66,11 +72,7 @@ That will launch only the competition simulation. To run our code, in a second t
 
 Our solution to the challenge will begin running, hopefully similarly to what can be seen in the video.
 
-## Where's the code?
-
-The code can be found within the `workspace/ekumen/` folder in this repository. except for a few early tools and scripts, all of it is within the `ek_challenger` package in that folder.
-
-## Will it run in the actual robot?
+## Will this run in the actual robot?
 
 It's unlikely. The location of the table and the general location of the shelf are hardcoded in the behavior tree, so it's not really adaptable to a different scenario from the one in Gazebo. This is trivial to change, though
 
