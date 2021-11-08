@@ -12,14 +12,9 @@ Panels:
         - /Planning1/Base1/Global1
         - /Planning1/Base1/Local1/motion vector1
         - /Planning1/Base1/Goal1
-        - /MotionPlanning1
         - /MotionPlanning1/Scene Geometry1
         - /MotionPlanning1/Scene Robot1
-        - /MarkerArray1
-        - /Marker2
-        - /Marker4
-        - /Marker5
-      Splitter Ratio: 0.61771559715271
+      Splitter Ratio: 0.6170212626457214
     Tree Height: 443
   - Class: rviz/Selection
     Name: Selection
@@ -1166,7 +1161,7 @@ Visualization Manager:
       Name: Mapping
     - Acceleration_Scaling_Factor: 1
       Class: moveit_rviz_plugin/MotionPlanning
-      Enabled: true
+      Enabled: false
       Move Group Namespace: right
       MoveIt_Allow_Approximate_IK: false
       MoveIt_Allow_External_Program: false
@@ -1198,329 +1193,6 @@ Visualization Manager:
           Expand Link Details: false
           Expand Tree: false
           Link Tree Style: Links in Alphabetic Order
-          arm_left_1_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          arm_left_2_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          arm_left_3_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          arm_left_4_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          arm_left_5_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          arm_left_6_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          arm_left_7_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          arm_left_tool_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          arm_right_1_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          arm_right_2_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          arm_right_3_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          arm_right_4_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          arm_right_5_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          arm_right_6_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          arm_right_7_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          arm_right_tool_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          base_antenna_left_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          base_antenna_right_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          base_cover_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          base_footprint:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          base_imu_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          base_laser_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          base_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          base_mic_back_left_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          base_mic_back_right_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          base_mic_front_left_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          base_mic_front_right_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          base_sonar_01_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          base_sonar_02_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          base_sonar_03_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          caster_back_left_1_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          caster_back_left_2_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          caster_back_right_1_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          caster_back_right_2_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          caster_front_left_1_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          caster_front_left_2_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          caster_front_right_1_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          caster_front_right_2_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          gripper_left_grasping_frame:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          gripper_left_left_finger_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          gripper_left_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          gripper_left_right_finger_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          gripper_left_tool_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          gripper_right_grasping_frame:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          gripper_right_left_finger_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          gripper_right_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          gripper_right_right_finger_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          gripper_right_tool_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          head_1_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          head_2_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          rgbd_laser_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          suspension_left_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          suspension_right_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          torso_fixed_column_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          torso_fixed_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          torso_lift_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          wheel_left_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          wheel_right_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          wrist_left_ft_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          wrist_left_ft_tool_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          wrist_right_ft_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          wrist_right_ft_tool_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          xtion_depth_frame:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          xtion_depth_optical_frame:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          xtion_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          xtion_optical_frame:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          xtion_orbbec_aux_joint_frame:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          xtion_rgb_frame:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          xtion_rgb_optical_frame:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
         Loop Animation: false
         Robot Alpha: 0.5
         Robot Color: 150; 50; 150
@@ -1552,7 +1224,103 @@ Visualization Manager:
       Planning Scene Topic: /right/move_group/monitored_planning_scene
       Robot Description: robot_description
       Scene Geometry:
-        Scene Alpha: 0.10000000149011612
+        Scene Alpha: 0.8999999761581421
+        Scene Color: 50; 230; 50
+        Scene Display Time: 0.009999999776482582
+        Show Scene Geometry: true
+        Voxel Coloring: Z-Axis
+        Voxel Rendering: Occupied Voxels
+      Scene Robot:
+        Attached Body Color: 150; 50; 150
+        Links:
+          All Links Enabled: true
+          Expand Joint Details: false
+          Expand Link Details: false
+          Expand Tree: false
+          Link Tree Style: Links in Alphabetic Order
+        Robot Alpha: 1
+        Show Robot Collision: false
+        Show Robot Visual: true
+      Value: false
+      Velocity_Scaling_Factor: 1
+    - Alpha: 0.699999988079071
+      Class: rviz/Map
+      Color Scheme: map
+      Draw Behind: false
+      Enabled: true
+      Name: Map
+      Topic: /octomap/projected_map
+      Unreliable: false
+      Use Timestamp: false
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /right/move_group/display_contacts
+      Name: MarkerArray
+      Namespaces:
+        {}
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /table_scanner_node/table_scan
+      Name: Marker
+      Namespaces:
+        shelves_scanner_results: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: false
+      Marker Topic: /shelf_scanner_node/tomato_can_stocking_target_poses
+      Name: Marker
+      Namespaces:
+        {}
+      Queue Size: 100
+      Value: false
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /ek_challenger_node/tomato_can_makers_table
+      Name: Marker
+      Namespaces:
+        table: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /ek_challenger_node/tomato_can_makers_backtray
+      Name: Marker
+      Namespaces:
+        backtray: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /ek_challenger_node/tomato_can_makers_shelf
+      Name: Marker
+      Namespaces:
+        {}
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Image
+      Enabled: false
+      Image Topic: /xtion/depth_registered/image_raw
+      Max Value: 1
+      Median window: 5
+      Min Value: 0
+      Name: Image
+      Normalize Range: false
+      Queue Size: 2
+      Transport Hint: raw
+      Unreliable: false
+      Value: false
+    - Class: moveit_rviz_plugin/PlanningScene
+      Enabled: true
+      Move Group Namespace: left
+      Name: PlanningScene
+      Planning Scene Topic: /left/move_group/monitored_planning_scene
+      Robot Description: robot_description
+      Scene Geometry:
+        Scene Alpha: 0.8999999761581421
         Scene Color: 50; 230; 50
         Scene Display Time: 0.009999999776482582
         Show Scene Geometry: true
@@ -1893,65 +1661,6 @@ Visualization Manager:
         Show Robot Collision: false
         Show Robot Visual: true
       Value: true
-      Velocity_Scaling_Factor: 1
-    - Alpha: 0.699999988079071
-      Class: rviz/Map
-      Color Scheme: map
-      Draw Behind: false
-      Enabled: true
-      Name: Map
-      Topic: /octomap/projected_map
-      Unreliable: false
-      Use Timestamp: false
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /right/move_group/display_contacts
-      Name: MarkerArray
-      Namespaces:
-        {}
-      Queue Size: 100
-      Value: true
-    - Class: rviz/Marker
-      Enabled: true
-      Marker Topic: /table_scanner_node/table_scan
-      Name: Marker
-      Namespaces:
-        shelves_scanner_results: true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/Marker
-      Enabled: false
-      Marker Topic: /shelf_scanner_node/tomato_can_stocking_target_poses
-      Name: Marker
-      Namespaces:
-        {}
-      Queue Size: 100
-      Value: false
-    - Class: rviz/Marker
-      Enabled: true
-      Marker Topic: /ek_challenger_node/tomato_can_makers_table
-      Name: Marker
-      Namespaces:
-        table: true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/Marker
-      Enabled: true
-      Marker Topic: /ek_challenger_node/tomato_can_makers_backtray
-      Name: Marker
-      Namespaces:
-        backtray: true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/Marker
-      Enabled: true
-      Marker Topic: /ek_challenger_node/tomato_can_makers_shelf
-      Name: Marker
-      Namespaces:
-        shelf: true
-      Queue Size: 100
-      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -1980,25 +1689,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/ThirdPersonFollower
-      Distance: 3.346003532409668
+      Distance: 3.041163682937622
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 1.3093342781066895
-        Y: 0.3572199046611786
-        Z: -5.960464477539062e-7
-      Focal Shape Fixed Size: true
+        X: 0.5929053425788879
+        Y: -0.13736987113952637
+        Z: -2.1457672119140625e-6
+      Focal Shape Fixed Size: false
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.409797340631485
+      Pitch: 0.7803965210914612
       Target Frame: base_link
       Value: ThirdPersonFollower (rviz)
-      Yaw: 3.088608741760254
+      Yaw: 4.058576583862305
     Saved: ~
 Window Geometry:
   Displays:
@@ -2009,14 +1718,14 @@ Window Geometry:
   Image:
     collapsed: true
   MotionPlanning:
-    collapsed: true
+    collapsed: false
   MotionPlanning - Trajectory Slider:
     collapsed: false
-  QMainWindow State: 000000ff00000000fd00000004000000000000034a000003a2fc0200000013fb0000001200530065006c0065006300740069006f006e000000003b0000009b0000005c00fffffffb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073000000003b000000f9000000c700fffffffb0000000a0049006d006100670065000000013a000001200000001600fffffffb0000001200500061006c00540065006c0065006f0070000000031e000000bf0000000000000000fb0000001e0044006f0063006b0055006e0064006f0063006b00500061006e0065006c000000033a000000a30000000000000000fb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000001c0043006f006d00700072006500730073006500640020004d0061007000000002d7000000c90000000000000000fb00000014004800650061006400430061006d0065007200610100000276000000c20000000000000000fb000000100044006900730070006c00610079007300000002b5000001280000000000000000fb0000000a0049006d0061006700650100000312000000cb0000000000000000fb0000000a0049006d006100670065000000027e000000970000000000000000fb000000280020002d0020005400720061006a006500630074006f0072007900200053006c00690064006500720000000000ffffffff0000000000000000fb0000001c004d006f00740069006f006e0050006c0061006e006e0069006e006700000002600000017d0000017200fffffffb00000044004d006f00740069006f006e0050006c0061006e006e0069006e00670020002d0020005400720061006a006500630074006f0072007900200053006c00690064006500720000000000ffffffff0000003f00fffffffb0000000a0049006d0061006700650100000313000000ca00000000000000000000000100000147000003a2fc0200000007fb0000000a00560069006500770073000000003b000003a2000000a000fffffffb0000001e0054006f006f006c002000500072006f0070006500720074006900650073010000003b000001aa0000000000000000fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730000000028000000a30000000000000000fb00000026004d00610070004d0061006e006100670065006d0065006e0074005700690064006700650074010000003b000003a20000000000000000fc0000003b000003a20000000000fffffffa000000000100000001fb0000001c0057006100790070006f0069006e0074002000470072006f007500700000000000ffffffff0000000000000000fb00000028004e0061007600690067006100740069006f006e005500740069006c007300500061006e0065006c010000027d000001600000000000000000fb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e100000197000000030000052d0000003efc0100000002fb0000000800540069006d006501000000000000052d0000000000000000fb0000000800540069006d00650100000000000004500000000000000000000003c0000003a200000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd000000040000000000000294000003a2fc0200000014fb0000001200530065006c0065006300740069006f006e000000003b0000009b0000005c00fffffffb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073000000003b00000158000000c700fffffffb0000000a0049006d0061006700650000000199000001e80000001600fffffffb0000000a0049006d0061006700650000000387000000560000001600fffffffb0000001200500061006c00540065006c0065006f0070000000031e000000bf0000000000000000fb0000001e0044006f0063006b0055006e0064006f0063006b00500061006e0065006c000000033a000000a30000000000000000fb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000001c0043006f006d00700072006500730073006500640020004d0061007000000002d7000000c90000000000000000fb00000014004800650061006400430061006d0065007200610100000276000000c20000000000000000fb000000100044006900730070006c00610079007300000002b5000001280000000000000000fb0000000a0049006d006100670065000000027e000000970000000000000000fb000000280020002d0020005400720061006a006500630074006f0072007900200053006c00690064006500720000000000ffffffff0000000000000000fb0000001c004d006f00740069006f006e0050006c0061006e006e0069006e006700000002600000017d0000017200fffffffb00000044004d006f00740069006f006e0050006c0061006e006e0069006e00670020002d0020005400720061006a006500630074006f0072007900200053006c00690064006500720000000000ffffffff0000003f00fffffffb0000000a0049006d0061006700650100000313000000ca0000000000000000fb0000000a0049006d00610067006500000003510000008c00000000000000000000000100000100000003a2fc0200000007fb0000000a00560069006500770073000000003b000003a2000000a000fffffffb0000001e0054006f006f006c002000500072006f0070006500720074006900650073010000003b000001aa0000000000000000fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730000000028000000a30000000000000000fb00000026004d00610070004d0061006e006100670065006d0065006e0074005700690064006700650074010000003b000003a20000000000000000fc0000003b000003a20000000000fffffffa000000000100000001fb0000001c0057006100790070006f0069006e0074002000470072006f007500700000000000ffffffff0000000000000000fb00000028004e0061007600690067006100740069006f006e005500740069006c007300500061006e0065006c010000027d000001600000000000000000fb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e100000197000000030000052d0000003efc0100000002fb0000000800540069006d006501000000000000052d0000000000000000fb0000000800540069006d0065010000000000000450000000000000000000000389000003a200000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
     collapsed: false
   Views:
     collapsed: true
-  Width: 960
-  X: 1920
-  Y: 27
+  Width: 905
+  X: 99
+  Y: 74

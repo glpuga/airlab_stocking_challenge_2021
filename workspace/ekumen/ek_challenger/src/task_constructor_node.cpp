@@ -35,7 +35,8 @@ bool TaskConstructorNode::planCallback(
     ek_challenger::TaskConstructorPlan::Response &) {
   task_ptr_ = std::make_unique<ek_challenger::PickPlaceTask>(req.robot_side);
 
-  if (!task_ptr_->build(req.source_object_id, req.target_pose)) {
+  if (!task_ptr_->build(req.source_object_id, req.target_pose, true,
+                        req.flat_hand_mode)) {
     ROS_ERROR("Failed to build a plan description for Task Constructor");
     return false;
   }

@@ -37,9 +37,9 @@
     </include>
 
     <!-- Sensors Functionality -->
-    <!-- <include ns="move_group" file="$(find tiago_dual_moveit_config)/launch/sensor_manager.launch.xml" >
+    <include ns="move_group" file="$(find ek_challenger)/launch/sensor_manager.launch.xml" >
       <arg name="moveit_sensor_manager" value="tiago_dual" />
-    </include> -->
+    </include>
 
     <!-- Start the actual move_group node/action server -->
     <node name="move_group" pkg="moveit_ros_move_group" type="move_group" respawn="false" output="screen">

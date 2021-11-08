@@ -1,6 +1,6 @@
 string robot_side
 string source_object_id
 geometry_msgs/PoseStamped target_pose
-bool mode2
+bool flat_hand_mode
 ---
 bool result

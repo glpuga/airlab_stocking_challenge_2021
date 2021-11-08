@@ -14,8 +14,8 @@ namespace ek_challenger {
 class TrayModelGeneric : public TrayModelImpl {
  public:
   TrayModelGeneric(const std::string &name,
-                 const geometry_msgs::PoseStamped &pose,
-                 const std::vector<std::string> &moveit_namespaces)
+                   const geometry_msgs::PoseStamped &pose,
+                   const std::vector<std::string> &moveit_namespaces)
       : TrayModelImpl(name, pose, moveit_namespaces) {}
 };
 

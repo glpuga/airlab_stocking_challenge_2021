@@ -19,16 +19,7 @@ class TrayModelBacktray : public TrayModelImpl {
       : TrayModelImpl(name, pose, moveit_namespaces) {}
 
  private:
-  void updateSceneAddingFrame(CollisionObjectManager &om) override {
-    auto pose1 = trayPose();
-    auto pose2 = trayPose();
-    const auto distance = 0.70;
-    pose1.pose.position.y -= distance;
-    pose2.pose.position.y += distance;
-
-    om.addBox("guard1", pose1, 1.6, 0.02, 1);
-    om.addBox("guard2", pose2, 1.6, 0.02, 1);
-  }
+  void updateSceneAddingFrame(CollisionObjectManager &) override {}
 };
 
 }  // namespace ek_challenger

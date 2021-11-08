@@ -46,11 +46,6 @@ bool ShelfScannerNode::scanShelvesCallback(
   ShelfScanner tray_finder{req.volume_width, req.volume_height,
                            req.volume_depth};
 
-  if (req.command == req.CLEAR) {
-    tray_finder.clearObstacles();
-    return true;
-  } 
-
   ROS_INFO_STREAM("ScanShelves command received for volumen ("
                   << req.volume_width << " x " << req.volume_height << " x "
                   << req.volume_depth << ")");
@@ -62,7 +57,7 @@ bool ShelfScannerNode::scanShelvesCallback(
                                                     camera_info_sample_);
 
   ROS_INFO_STREAM("Found " << tomato_can_stocking_target_poses.size()
-                           << "stocking target poses");
+                           << " stocking target poses");
 
   publishMarkerMessage(tomato_can_stocking_target_poses);
 
@@ -81,12 +76,13 @@ void ShelfScannerNode::cameraInfoCallback(const sensor_msgs::CameraInfo &msg) {
 void ShelfScannerNode::publishMarkerMessage(
     const std::vector<geometry_msgs::PoseStamped>
         &tomato_can_stocking_target_poses) const {
-  if (!tomato_can_stocking_target_poses.size()) {
-    return;
+  std::string frame_id = "base_link";
+  if (tomato_can_stocking_target_poses.size()) {
+    frame_id = tomato_can_stocking_target_poses[0].header.frame_id;
   }
 
   visualization_msgs::Marker marker;
-  marker.header.frame_id = tomato_can_stocking_target_poses[0].header.frame_id;
+  marker.header.frame_id = frame_id;
   marker.header.stamp = ros::Time();
   marker.ns = "shelves_scanner_results";
   marker.id = 0;

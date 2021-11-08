@@ -17,9 +17,10 @@ class TrayModelTable : public TrayModelImpl {
                  const geometry_msgs::PoseStamped &pose,
                  const std::vector<std::string> &moveit_namespaces)
       : TrayModelImpl(name, pose, moveit_namespaces) {}
-private:
+
+ private:
   void updateSceneAddingFrame(CollisionObjectManager &om) override {
-    om.addBox("table", trayPose(), 1.0, 1.0, 0.03);
+    om.addBox("table", trayPose(), 0.89, 1.2, 0.55);
   }
 };
 

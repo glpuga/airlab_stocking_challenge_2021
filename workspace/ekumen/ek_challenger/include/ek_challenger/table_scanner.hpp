@@ -18,39 +18,44 @@
 // project
 #include <ek_challenger/ros_frame_transformer.hpp>
 
-namespace ek_challenger {
+namespace ek_challenger
+{
 
-class TableScanner {
- public:
-  TableScanner(const double table_distance_to_base, const double table_width,
-               const double table_depth);
+  class TableScanner
+  {
+  public:
+    TableScanner(const double table_distance_to_base, const double table_width,
+                 const double table_depth);
 
-  void processImage(const sensor_msgs::Image &image,
-                    const sensor_msgs::CameraInfo &camera_info,
-                    const ROSFrameTransformer &tf);
+    void processImage(const sensor_msgs::Image &image,
+                      const sensor_msgs::CameraInfo &camera_info,
+                      const ROSFrameTransformer &tf);
 
-  std::vector<geometry_msgs::PoseStamped> processResult(
-      sensor_msgs::Image &proc_image) const;
+    std::vector<geometry_msgs::PoseStamped> processResultUsingContours(
+        sensor_msgs::Image &proc_image) const;
 
- private:
-  const std::string base_link_frame_{"base_link"};
+    std::vector<geometry_msgs::PoseStamped> processResultUsingHoughCircles(
+        sensor_msgs::Image &proc_image) const;
 
-  // buffer granularity
-  const double buffer_delta_{0.005};
+  private:
+    const std::string base_link_frame_{"base_link"};
 
-  const double table_distance_to_base_;
-  const double table_width_;
-  const double table_depth_;
+    // buffer granularity
+    const double buffer_delta_{0.0005};
 
-  const int32_t buffer_width_;
-  const int32_t buffer_height_;
+    const double table_distance_to_base_;
+    const double table_width_;
+    const double table_depth_;
 
-  std::vector<double> buffer_;
+    const int32_t buffer_width_;
+    const int32_t buffer_height_;
 
-  std::pair<int32_t, int32_t> convertXYtoUV(const double x,
-                                            const double y) const;
+    std::vector<double> buffer_;
 
-  int32_t uvToLinearIndex(const int32_t u, const int32_t v) const;
-};
+    std::pair<int32_t, int32_t> convertXYtoUV(const double x,
+                                              const double y) const;
 
-}  // namespace ek_challenger
+    int32_t uvToLinearIndex(const int32_t u, const int32_t v) const;
+  };
+
+} // namespace ek_challenger

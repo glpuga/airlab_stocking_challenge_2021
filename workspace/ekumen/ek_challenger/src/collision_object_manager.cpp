@@ -41,7 +41,7 @@ void CollisionObjectManager::addCylinder(const std::string &id,
   shape_msgs::SolidPrimitive primitive;
   primitive.type = primitive.CYLINDER;
   primitive.dimensions.resize(2);
-  primitive.dimensions[primitive.CYLINDER_RADIUS] = radius;
+  primitive.dimensions[primitive.CYLINDER_RADIUS] = radius*0.95;
   primitive.dimensions[primitive.CYLINDER_HEIGHT] = height;
 
   geometry_msgs::Pose box_pose;
@@ -83,17 +83,11 @@ void CollisionObjectManager::addBox(const std::string &id,
   known_objects_[id] = collision_object;
 }
 
-void CollisionObjectManager::updatePlanningScene(bool clear) const {
+void CollisionObjectManager::updatePlanningScene() const {
   std::vector<moveit_msgs::CollisionObject> collision_objects;
 
   for (const auto &item : known_objects_) {
     collision_objects.push_back(item.second);
-  }
-
-  if (clear) {
-    for (auto &item : collision_objects) {
-      item.operation = moveit_msgs::CollisionObject::REMOVE;
-    }
   }
 
   for (const auto &planning_scene_manager : planning_scene_managers_) {

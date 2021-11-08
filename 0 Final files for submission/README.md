@@ -4,49 +4,48 @@
 
 This is the submission information for Team Ekumen, on the day of the final deadline for the challenge.
 
-Unfortunately we did not manage to have an end-to-end solution ready to compete in time, so we are aware that our submission is null.
+This is the second submission we make. We made an incomplete submission for the deadline of November 1st. For that deadline unfortunately we had not completed an end-to-end solution to the challenge in time, but we had worked hard on the challenge and we wanted to share how far we had made it into the solution by submitting our code and video.
 
-However, we worked hard on it, and we wanted to share what little we managed to get working with you as sign of gratitude for having accepted our participation.
+However, after the organization invited the participants to keep submitting solutions until a new deadline set on November 8th, we made the effort to complete the missing functionality before this new deadline. The submission files and media (code + youtube video + this file) have been updated to reflect that.
+
+While we had not managed to complete functionality for the deadline of Nov 1st, we have made good progress since then and we can now submit a version that can perform product stocking.
 
 ## Video of the submission at work
 
-Link to the video: https://youtu.be/axz91ZYtzio
+Link to the video on youtube: https://youtu.be/N2B1DwXFJD4
+
+The video is also present in a file within `Final files for submission` in this repository.
 
 ## General approach
 
 We chose the following strategy:
 
-1. The robot would go to the table
-2. It would then identify the location of the cans.
-3. It would load as many tomato cans on its back as we could make fit.
-4. It would then navigate to the shelf, and identify the locations to stock the cans.
-5. It would then transfer the cans from its back to the shelf.
-6. Then it would repeat as many times as necessary.
+1. The robot goes to the table and performs segmentation on the depth data to calculate the pose of the tomato cans.
+3. The robot then loads a few tomato cans on the tray on its back, for transport to the shelves.
+4. The robot identifies the location of the shelf where the cans should be stocked.
+5. The robot then transfers the cans to the shelf.
+6. The process gets repeated as many times as necessary.
 
 ## Contents of the submission
 
-Our current state, on the moment of the deadline, is that we can pick-up the cans from the table and we can place them in the tray on the back of the robot. For that we:
+Our code, on the date of Nov 8th, can perform all 6 items in the list above. Our approach still needs tunning, and the behavior is not totally repeatable from run to run.
 
-- Navigate to the table using the map.
-- Identify the location of the cans from the depth image
-- Pick and place the cans using a backported version of the [MoveIt Task Constructor](https://github.com/ros-planning/moveit_task_constructor) (originally it only supports ROS Noetic and onwards), giving us a very fluid secuence of movements for the pick-and-place task.
-- We can navigate to the shelves.
-- We can scan the shelves, locating potential spots to stock the cans in.
-- We sequence all of this using [BehaviorTree.CPP](https://github.com/BehaviorTree/BehaviorTree.CPP)
+The location of the table and the general location of the shelves are hardcoded in the robot behavior file loaded with BehaviorTree.CPP. The products on the table and the location of the particular shelf to stock, on the other hand, are found by the robot using sensor data.
 
-We barely managed to start integration of all the software pieces the day before the deadline, so all of this kind-of works... most of the time. Well, maybe not most, but works sometimes.
+Initially we would have wanted to detect the table and the shelf to stock using image recognition, but unfortunately this feature has not been completed in time for this submission. Currently the location of the table is hardcoded on the behavior file, which is an xml file that encodes the behavior of the robot that solves this challenge. This file is a text file, however, and can therefore be easily updated.
 
-Which gets us to the reason we were unable to complete the challenge: **Unfortunately we could not figure why moveit refuses to pick the cans from the tray of the robot and place them within the shelf at the designated spots, and this prevents us from completing the challenge sucessfully.** Most likely we need some more tuning of MoveIt, but we could not solve it in time for the deadline.
+The location of the shelf to stock is detected using sensors, but lacking image recognition to detect the tomato cans on the shelf, we implemented the detection of the shelf using a heuristic algorithm that will try to stock any shelf where two levels of tomato cans can be stacked one top of another.
 
 ## Tools used
 
-As said before, we use:
+To implement our solution to the challenge we used the following tools:
 
-- [BehaviorTree.CPP](https://github.com/BehaviorTree/BehaviorTree.CPP). Awesome tool
-- [MoveIt Task Constructor](https://github.com/ros-planning/moveit_task_constructor). Great tool.
-- While we developed pointcloud segmentation using PCL to detect the tomato cans, the version that is currently integrated in the submission uses OpenCV.
+- [BehaviorTree.CPP](https://github.com/BehaviorTree/BehaviorTree.CPP). Awesome tool. It allowed to easily update the competition behavior of the robot, and also experiment different approaches and and run quick tests by composing complex behaviors from simple actions.
+- [MoveIt Task Constructor](https://github.com/ros-planning/moveit_task_constructor). A tool with great potential that allowed us to code complex arm movements with smooth transitions between them and fast planning time.
+- While we developed pointcloud segmentation using PCL to detect the tomato cans on the table, the code version that is currently integrated in this submission uses OpenCV to perform this action.
+- Generally ROS packages (MoveIt, MoveBase) and some additional libraries (OpenCV, fmt).
 
-At some point we trained a YOLO neural network to detect tomato cans, and created a ROS package to help us create a dataset for this by taking multitude of pictures of the tomato can model from different angles. This effort, however, got deprioritized in favor of behavior and picking, so none of this is currently used in the code we submitted but you'll find folders with darknet configuration files in them.
+At some point we trained a YOLO neural network to detect tomato cans on images using [Darknet](https://github.com/AlexeyAB/darknet), and we created a ROS package to help us create a dataset for this by taking multitude of pictures of the tomato can Gazebo model from different angles. This effort, however, got deprioritized in favor of robot behavior and arm planning, so none of this is currently used in the code we submitted but you'll find folders with darknet configuration files in them.
 
 ## Usage of the submitted software
 
@@ -58,7 +57,7 @@ To build the development docker, within this repo do:
 4. Once within, run `catkin_make`, then `source devel/setup.bash`.
 5. Then start the simulation with `roslaunch retail_store_simulation tiago_simulation.launch`
 
-That will launch the competition simulation. Then open a second terminal and do:
+That will launch only the competition simulation. To run our code, in a second terminal do:
 
 1. Go into the `docker/` folder.
 2. Run `./join.bash` to open a second terminal within the same container.
@@ -73,9 +72,8 @@ The code can be found within the `workspace/ekumen/` folder in this repository. 
 
 ## Will it run in the actual robot?
 
-Most definitely not. The location of the table and the shelves is hardcoded in the behavior tree. This is trivial to change, but given that the stacking step of the algorithm does not work it's unnecessary to try. Also, we did not get to finely tune obstacle detection using moveit/octomap.
+It's unlikely. The location of the table and the general location of the shelf are hardcoded in the behavior tree, so it's not really adaptable to a different scenario from the one in Gazebo. This is trivial to change, though
 
-Busy as we were getting to the deadline, I'm afraid we did not prepare a ready-to-run docker with the software already built to run on the robot.
 
 
 
